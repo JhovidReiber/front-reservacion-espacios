@@ -48,5 +48,13 @@ export class GeneralService {
       });
   }
 
+  getTypesSpace() {
+    return this.http.get(`${environment.apiUrl}/type_spaces`);
+  }
+
+  getSpaces() {
+    return this.http.get(`${environment.apiUrl}/spaces`);
+  }
+
 
 }

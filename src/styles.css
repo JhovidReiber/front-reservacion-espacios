@@ -1,12 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; background: #dfdfdf;}
+html,
+body {
+  height: 100%;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  /* background: linear-gradient(135deg, #f06, #4a90e2); */
+ background: #ffffff;
+/* background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(61, 7, 7, 0.78) 100%); */
+background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgb(0, 48, 206) 100%);
+}
 
 .snackbar-success,
 .snackbar-error {
@@ -19,7 +25,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .snackbar-success {
   --mdc-snackbar-container-color: #4caf50;
-  
+
 }
 
 .snackbar-error {

@@ -10,8 +10,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatCardModule} from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { RegisterComponent } from '../register/register.component';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +22,7 @@ import {MatCardModule} from '@angular/material/card';
     CommonModule,
     FormsModule,
     RouterModule,
+    RegisterComponent,
 
     MatFormFieldModule,
     MatIconModule,
@@ -27,6 +30,7 @@ import {MatCardModule} from '@angular/material/card';
     MatButtonModule,
     MatProgressSpinnerModule,
     MatCardModule,
+    MatTabsModule,
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -49,7 +53,10 @@ export class LoginComponent {
     });
   }
 
-   ngOnInit(): void {
+  ngOnInit(): void {
+    if (this.authService.isAuthenticated() && this.authService.isTokenValid()) {
+      this.router.navigate(['/home']);
+    }
     this.form.reset();
   }
 
@@ -66,8 +73,8 @@ export class LoginComponent {
       (response) => {
         console.log("response", response);
         this.authService.setToken(response.token);
-        // this.router.navigate(['/home']);  // Redirigir a la página de inicio
-       this.generalService.showToast('¡Inicio de sesión exitoso!', 'success');
+        this.router.navigate(['/home']);
+        this.generalService.showToast('¡Inicio de sesión exitoso!', 'success');
         this.isLoading = false;
       },
       (error) => {

@@ -1,16 +1,31 @@
 <div class="container-fluid ">
   <div class="row w-100">
     <div class="col-md-12 d-flex justify-content-center align-items-center p-5" style="min-height: 100vh;">
-      <mat-card class="card shadow-lg p-3 mb-5 bg-body-tertiary rounded">
-        <mat-tab-group dynamicHeight>
-          <mat-tab label="Inicio de Sesion" [routerLink]="['/login']">
-           <app-login></app-login>
-          </mat-tab>
-          <mat-tab label="Registro" [routerLink]="['/register']">
-            <app-register></app-register>
-          </mat-tab>
-        </mat-tab-group>
-      </mat-card>
+      <div >
+        @if (isAuthenticated) {
+
+
+        <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+          <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+            @for (menu of menus; track menu) {
+            <a mat-tab-link (click)="activeLink = menu" [active]="activeLink == menu" [routerLink]="menu.route"
+              *ngIf="hasRole(menu.role)">
+              <i class="{{menu.icon}} me-2"></i>
+              {{menu.label}}
+            </a>
+            }
+            <a mat-tab-link (click)="cerrarSesion()">
+              <i class="fa-solid fa-right-from-bracket me-2"></i>
+              Cerrar Sesión
+            </a>
+          </nav>
+          <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+        </mat-card>
+        }
+
+
+        <router-outlet></router-outlet>
+      </div>
     </div>
   </div>
 </div>

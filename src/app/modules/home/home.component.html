@@ -1,0 +1,89 @@
+<div class="container d-flex justify-content-center align-items-center">
+
+  <div class="row">
+    <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <h4 class="text-center m-0 p-0">
+        Bienvenido <b>{{authUser?.name ?? ''}}, </b>
+        a la aplicación de Reservación de Espacios.
+      </h4>
+    </mat-card>
+
+    <!-- <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <p>
+        Esta aplicación te permite gestionar la reservación de espacios de manera eficiente y sencilla.
+        Puedes navegar a través de las diferentes secciones utilizando el menú de navegación.
+      </p>
+    </mat-card> -->
+
+    <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <h4 class="text-center">Filtros de Búsqueda</h4>
+        </div>
+        <!-- Filtro: Tipos de espacio -->
+        <div class="col-md-4">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Tipos de espacio</mat-label>
+            <mat-select [formControl]="typeSpaceControl">
+              <mat-option *ngFor="let option of typesSpace" [value]="option.id">
+                {{ option.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Filtro: Cantidad -->
+        <div class="col-md-4">
+          <label class="form-label">Cantidad: <span class="ms-1">{{ capacityControl.value }}</span></label>
+          <mat-slider class="w-100" min="0" max="100" showTickMarks discrete [displayWith]="formatLabel">
+            <input type="range" [formControl]="capacityControl" matSliderThumb>
+          </mat-slider>
+        </div>
+
+        <!-- Filtro: Fechas -->
+        <div class="col-md-4">
+          <mat-form-field appearance="fill" class="w-100">
+            <mat-label>Fechas</mat-label>
+            <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker">
+              <input matStartDate formControlName="start" placeholder="Inicio">
+              <input matEndDate formControlName="end" placeholder="Fin">
+            </mat-date-range-input>
+            <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card>
+
+    <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <h4 class="text-center">Espacios Disponibles</h4>
+        </div>
+
+         <div *ngFor="let space of spaces; let i = index" class="col-md-4">
+          <div class="card">
+            <img [src]="'https://material.angular.dev/assets/img/examples/shiba2.jpg'" class="card-img-top img-fluid"
+              alt="...">
+            <div class="card-body">
+              <h5 class="card-title">{{ space.name }}</h5>
+              <p class="card-text">{{ space.description }}</p>
+              <p class="card-text"><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
+                <div class="d-grid gap-2">
+                        <button type="submit" extended matButton="outlined" color="primary" class="w-100 btn btn-primary">
+                                Reservar
+                        </button>
+                    </div>
+            </div>
+          </div>
+        </div>
+
+
+      </div>
+    </mat-card>
+
+
+  </div>
+
+</div>
