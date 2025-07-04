@@ -18,6 +18,7 @@ import {MatCardModule} from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
+  standalone: true,
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
@@ -69,10 +70,7 @@ export class HomeComponent implements OnInit {
     this.getTypesSpace();
     this.getSpaces();
 
-    let token: string = this.authService.getToken() ?? '';
-    const decodeJwt = this.authService.decodeJwt(token);
-    this.authUser = decodeJwt;
-
+    this.authUser = this.authService.getDataUser();
   }
 
   options = [

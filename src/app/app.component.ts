@@ -19,13 +19,8 @@ import { filter } from 'rxjs';
 export class AppComponent {
   menus = [
     { label: 'Home', route: '/home', icon: 'fas fa-home', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
-    { label: 'Espacios', route: '/espacios', icon: 'fa-solid fa-map-location-dot', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
+    { label: 'Espacios', route: '/spaces', icon: 'fa-solid fa-map-location-dot', role: ['ROL_ADMIN'] },
     { label: 'Mis Reservas', route: '/mis-reservas', icon: 'fa-solid fa-bookmark', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
-
-    { label: 'Tipos de Espacios', route: '/tipos-espacios', icon: 'fa-solid fa-map-location-dot', role: ['ROL_ADMIN'] },
-    { label: 'Roles', route: '/roles', icon: 'fa-solid fa-user-shield', role: ['ROL_ADMIN'] },
-    { label: 'Usuarios', route: '/usuarios', icon: 'fa-solid fa-users', role: ['ROL_ADMIN'] },
-    // { label: 'Cerrar Sesión', route: '/login', icon: 'fa-solid fa-right-from-bracket', role: ['ROL_USUARIO'] },
   ];
   activeLink = this.menus[0];
 

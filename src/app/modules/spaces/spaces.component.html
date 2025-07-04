@@ -1,0 +1,117 @@
+<div class="container d-flex justify-content-center align-items-center">
+
+  <div class="row">
+    <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <h4 class="text-center m-0 p-0">
+        Bienvenido <b>{{authUser?.name ?? ''}}, </b>
+        a la aplicación de Reservación de Espacios.
+      </h4>
+    </mat-card>
+
+    <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
+      <div class="row">
+        <div class="col-md-12 mb-2">
+          <h4 class="text-center">Espacios Existentes</h4>
+        </div>
+
+        <div class="col-md-12 mb-2 d-flex flex-row-reverse">
+          <button type="submit" class="w-50 btn btn-outline-dark btn-sm"
+            (click)="showDetalle(null, 'create')">
+            Nuevo Espacio
+          </button>
+        </div>
+        <!-- Filtro: Tipos de espacio -->
+        <div class="col-md-12 tabla-responsive">
+          <table class="table table-bordered table-sm text-center table-hover">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Capacidad</th>
+                <th>Fotos</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!dataSource?.data?.length">
+                <td colspan="5" class="text-center">No hay espacios disponibles</td>
+              </tr>
+              <tr *ngFor="let element of dataSource?.data">
+                <td>{{ element.name }}</td>
+                <td>{{ element.description }}</td>
+                <td>{{ element.capacity }}</td>
+                <td>
+                  <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" (click)="showPhotos(element.photos)">
+                    Ver
+                  </button>
+                </td>
+                <td>
+                  <button class="btn btn-sm btn-outline-info btn-sm m-1" (click)="showDetalle(element, 'edit')">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button class="btn btn-outline-danger btn-sm m-1" (click)="showDetalle(element, 'delete')">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+
+          <mat-paginator [length]="spaces.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" (page)="getSpaces()">
+          </mat-paginator>
+        </div>
+      </div>
+
+
+    </mat-card>
+
+  </div>
+
+
+</div>
+
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-body">
+        <div *ngIf="photosSpace?.length > 0; else noImages">
+
+          <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-inner">
+              <div class="carousel-item" *ngFor="let item of photosSpace; let i = index" [class.active]="i === 0">
+                <img [src]="item" class="d-block mx-auto rounded" alt="Image"
+                  style="max-width: 550px !important; max-height: 550px !important;">
+              </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev"
+              style="color: #007bff;">
+              <span class="fas fa-chevron-left" aria-hidden="true"></span>
+              <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next"
+              style="color: #007bff;">
+              <span class="fas fa-chevron-right" aria-hidden="true"></span>
+              <span class="visually-hidden">Next</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Mensaje cuando no hay imágenes -->
+        <ng-template #noImages>
+          <h4 class="text-center">
+            Sin Imágenes
+          </h4>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

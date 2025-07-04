@@ -104,4 +104,11 @@ export class AuthService {
     }
     return of(this.isTokenValid());
   }
+
+  getDataUser(): any {
+    const token = this.getToken();
+    if (!token) return null;
+    const payload = this.decodeJwt(token);
+    return payload ? payload : null;
+  }
 }
