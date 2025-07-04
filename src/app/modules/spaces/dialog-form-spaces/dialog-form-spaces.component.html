@@ -55,6 +55,15 @@
         <input type="file" type="file" (change)="onFilesChange($event)" accept="image/*" multiple class="form-control"
           id="inputGroupFile02">
       </div>
+      <div class="mt-2" *ngIf="type === 'edit' && space?.photos">
+        <p class="text-center"><strong>Fotos actuales:</strong></p>
+        <div class="row d-flex justify-content-center align-items-center">
+          <div class="col d-flex justify-content-center align-items-center" *ngFor="let photo of decodePhotes(space.photos)">
+            <img [src]="photo" alt="Imagen del espacio" class="img-fluid"
+              style="max-height: 150px; width: auto; object-fit: cover;">
+          </div>
+        </div>
+      </div>
       <mat-error *ngIf="form.controls['photos'].invalid">
         Las fotos son requeridas
       </mat-error>
@@ -62,45 +71,45 @@
 
     <div formArrayName="schedules" class="row mb-4">
       <mat-label>Horarios Disponibles</mat-label>
-      <div class="col-md-12" *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i">
-
+      <div class="col-12 row" *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i">
         <mat-form-field class="col-md-12">
           <mat-label>Fecha</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Seleccionar fecha" >
+          <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Seleccionar fecha">
           <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker">s</mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
 
-        <div class="col-md-12 row d-flex justify-content-center align-items-center">
+        <div class="col-12 row d-flex justify-content-center align-items-center">
           <mat-form-field class="col-md-5">
             <mat-label>Hora de inicio</mat-label>
             <input matInput type="time" formControlName="startTime" placeholder="Hora de inicio" />
           </mat-form-field>
-          
 
-          <mat-form-field class="col-md-5">
+          <mat-form-field class="col-5">
             <mat-label>Hora de fin</mat-label>
             <input matInput type="time" formControlName="endTime" placeholder="Hora de fin" />
           </mat-form-field>
 
-          <mat-error class="col-md-12" *ngIf="schedules.controls[i].hasError('invalidDateRange')">
-          La hora de inicio debe ser menor que la hora de fin
-        </mat-error>
-
-          <div class="col-md-2 d-flex justify-content-center align-items-center">
-            <a type="buttons" class="btn btn-outline-danger btn-sm" (click)="removeSchedule(i)" *ngIf="schedules.length > 1">
+          <div class="col-2 d-flex justify-content-center align-items-center">
+            <a type="buttons" class="btn btn-outline-danger btn-sm" (click)="removeSchedule(i)"
+              *ngIf="schedules.length > 1">
               <i class="fa-solid fa-trash-can"></i>
             </a>
           </div>
+
+          <mat-error class="col-12" *ngIf="schedules.controls[i].hasError('invalidDateRange')">
+            La hora de inicio debe ser menor que la hora de fin
+          </mat-error>
+          
         </div>
 
 
       </div>
       <div class="col-md-12 d-flex justify-content-center align-items-center">
         <a class="btn btn-outline-primary btn-sm" (click)="addSchedule()">
-        Nuevo Horario <i class="fa-solid fa-circle-plus"></i>
-      </a>
+          Nuevo Horario <i class="fa-solid fa-circle-plus"></i>
+        </a>
       </div>
     </div>
 

@@ -11,23 +11,26 @@
     <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
       <div class="row">
         <div class="col-md-12 mb-2">
-          <h4 class="text-center">Espacios Existentes</h4>
+          <h4 class="text-center">
+            <i class="fa-solid fa-hotel"></i>
+            Espacios Existentes
+          </h4>
         </div>
 
         <div class="col-md-12 mb-2 d-flex flex-row-reverse">
-          <button type="submit" class="w-50 btn btn-outline-dark btn-sm"
-            (click)="showDetalle(null, 'create')">
-            Nuevo Espacio
+          <button type="submit" class="btn btn-outline-dark btn-sm" (click)="showDetalle(null, 'create')">
+            <i class="fa-solid fa-circle-plus"></i> Nuevo Espacio 
           </button>
         </div>
-        <!-- Filtro: Tipos de espacio -->
-        <div class="col-md-12 tabla-responsive">
-          <table class="table table-bordered table-sm text-center table-hover">
+
+        <div class="col-md-12 table-responsive p-0" >
+          <table class="table table-sm table-bordered table-striped table-hover align-middle shadow text-center table-hover">
             <thead>
               <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
                 <th>Capacidad</th>
+                <th>Horarios</th>
                 <th>Fotos</th>
                 <th>Acciones</th>
               </tr>
@@ -38,8 +41,23 @@
               </tr>
               <tr *ngFor="let element of dataSource?.data">
                 <td>{{ element.name }}</td>
-                <td>{{ element.description }}</td>
+                <td style="max-width: 300px;">
+                  <p>{{ element.description }}</p>
+                </td>
                 <td>{{ element.capacity }}</td>
+                <td>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item p-2" *ngFor="let schedule of decodeSchedules(element.schedules)">
+                      <div class="d-flex flex-column">
+                        <span><strong><i class="fa-regular fa-calendar-days"></i> Fecha:</strong> {{ schedule.date | date: 'yyyy-MM-dd' }}</span>
+                        <span class="">
+                          <strong><i class="fa-solid fa-clock"></i> Inicio:</strong> {{ schedule.startTime }} |
+                          <strong><i class="fa-solid fa-clock"></i> Fin:</strong> {{ schedule.endTime }}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </td>
                 <td>
                   <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" (click)="showPhotos(element.photos)">
@@ -57,9 +75,12 @@
               </tr>
             </tbody>
           </table>
-
-
-          <mat-paginator [length]="spaces.length" [pageSize]="5" [pageSizeOptions]="[5, 10, 25]" (page)="getSpaces()">
+          {{totalItems}}
+          <mat-paginator 
+            [length]="totalItems" 
+            [pageSize]="5" 
+            [pageSizeOptions]="[5]" 
+            (page)="onPageChange($event)">
           </mat-paginator>
         </div>
       </div>

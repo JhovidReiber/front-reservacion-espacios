@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, OnInit, Type, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, Type, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCard } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +9,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { GeneralService } from '../../core/services/general.service';
 import { TypeSpace } from '../../core/models/TypeSpace';
 import { MatButtonModule } from '@angular/material/button';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { Space } from '../../core/models/Space';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -52,15 +52,21 @@ export class SpacesComponent implements OnInit {
 
   newSpace: { name: string; description: string } = { name: '', description: '' };
   displayedColumns: string[] = ['name', 'description', 'capacity', 'actions'];
-  dataSource!: MatTableDataSource<any>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  dataSource!: MatTableDataSource<any>;
+  totalItems: any = 0;
+
+  pageIndex: number = 0;  // Página actual
+  pageSize: number = 5;   // Número de elementos por página
 
   readonly dialog = inject(MatDialog);
 
-  photosSpace!:any;
+  photosSpace!: any;
 
-  constructor() { }
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     this.getSpaces();
@@ -69,21 +75,41 @@ export class SpacesComponent implements OnInit {
   }
 
 
-
   getSpaces() {
-    this.generalService.getSpaces().subscribe({
+    const page = this.pageIndex + 1;  // API Platform usa páginas 1-basadas
+    const pageSize = this.pageSize;
+
+    console.log('pageIndex:', page);   // Para depuración
+    console.log('pageSize:', pageSize); // Para depuración
+
+    // Llamada al servicio para obtener los espacios con la paginación correcta
+    this.generalService.getSpacesldJson(page, pageSize).subscribe({
       next: (response: any) => {
-        this.spaces = response;
+        this.spaces = response['member'];  // Los datos de los espacios
+        this.totalItems = response['totalItems'];  // Total de elementos
+
+        // Asigna los datos al MatTableDataSource
         this.dataSource = new MatTableDataSource(this.spaces);
+
+        // Asigna el paginator manualmente
         this.dataSource.paginator = this.paginator;
 
-        console.log('Espacios obtenidos:', this.spaces, this.dataSource);
+        // Forzar la detección de cambios para que la vista se actualice correctamente
+        this.changeDetectorRef.detectChanges();
+
+        console.log("totalItems:", this.totalItems);  // Para depuración
       },
       error: (error: any) => {
         console.error('Error al obtener los espacios:', error);
         this.generalService.showToast('Error al cargar los espacios', 'error');
       }
     });
+  }
+
+  onPageChange(event: any) {
+    this.pageIndex = event.pageIndex;  // Cambia el índice de página
+    this.pageSize = event.pageSize;    // Cambia el tamaño de la página
+    this.getSpaces();                  // Llama nuevamente a getSpaces con la nueva página
   }
 
   getTypesSpace() {
@@ -128,6 +154,15 @@ export class SpacesComponent implements OnInit {
       this.photosSpace = fileArray;
     } catch (error) {
       this.photosSpace = null;
+    }
+  }
+
+  decodeSchedules(schedules: any) {
+    try {
+      const dataArray = JSON.parse(schedules);
+      return dataArray;
+    } catch (error) {
+      return [];
     }
   }
 

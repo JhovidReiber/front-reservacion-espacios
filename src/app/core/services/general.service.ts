@@ -65,6 +65,14 @@ export class GeneralService {
     return this.http.get(`${environment.apiUrl}/spaces`);
   }
 
+  getSpacesldJson(page: number = 1, pageSize: number = 5) {
+    return this.http.get(`${environment.apiUrl}/spaces?page=${page}&itemsPerPage=${pageSize}`, {
+      headers: {
+        Accept: 'application/ld+json'
+      }
+    });
+  }
+
 
   createSpace(space: Space) {
     return this.http.post(`${environment.apiUrl}/spaces`, space).toPromise()

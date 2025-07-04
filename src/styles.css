@@ -9,9 +9,12 @@ body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   /* background: linear-gradient(135deg, #f06, #4a90e2); */
- background: #ffffff;
-background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0.78) 100%);
-/* background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgb(0, 48, 206) 100%); */
+  background: #ffffff;
+  /* background: radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0.78) 100%); */
+  /* background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgb(0, 48, 206) 100%); */
+  /* background: #003b95; */
+  background: #020024;
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 1%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
 }
 
 .snackbar-success,
@@ -32,25 +35,12 @@ background: radial-gradient(circle,rgba(255, 255, 255, 1) 0%, rgba(0, 0, 0, 0.78
   --mdc-snackbar-container-color: #f44336;
 }
 
-.table-bordered {
-    border-radius: 10px; /* Redondear las esquinas de la tabla */
-    border-collapse: separate; /* Asegura que el borde redondeado funcione */
-  }
+table {
+  border-radius: 20px;
+  overflow: hidden;
+}
 
-  /* Redondear las esquinas superiores de la tabla */
-  .table-bordered thead th:first-child {
-    border-top-left-radius: 10px;
-  }
+.mat-mdc-card{
+  background: #fff !important;
+}
 
-  .table-bordered thead th:last-child {
-    border-top-right-radius: 10px;
-  }
-
-  /* Redondear las esquinas inferiores de la tabla */
-  .table-bordered tfoot td:first-child {
-    border-bottom-left-radius: 10px;
-  }
-
-  .table-bordered tfoot td:last-child {
-    border-bottom-right-radius: 10px;
-  }

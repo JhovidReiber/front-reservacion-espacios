@@ -13,8 +13,7 @@ import { TypeSpace } from '../../../core/models/TypeSpace';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
-import {MatTimepickerModule} from '@angular/material/timepicker';
-
+import { MatTimepickerModule } from '@angular/material/timepicker';
 
 @Component({
   standalone: true,
@@ -53,6 +52,7 @@ export class DialogFormSpacesComponent implements OnInit {
   isLoading = false;
 
   typesSpace: TypeSpace[] = this.data.typesSpace;
+  showPhotosEdit: any;
 
   constructor(
     private dialogRef: MatDialogRef<DialogFormSpacesComponent>,
@@ -65,20 +65,38 @@ export class DialogFormSpacesComponent implements OnInit {
       description: [this.type == 'edit' && this.space ? this.space.description : '', [Validators.required]],
       capacity: [this.type == 'edit' && this.space ? this.space.capacity : '', [Validators.required, Validators.min(1), Validators.max(100)]],
       typeSpace: [this.type == 'edit' && this.space ? this.space.typeSpace : '', [Validators.required]],
-      photos: ['', Validators.required],
-      schedules: this.fb.array([this.createSchedule()])
+      photos: [this.type === 'create' ? ['', Validators.required] : ['']],
+      schedules: this.fb.array(this.type == 'create' ? [this.createSchedule()] : [])
     });
+  }
+
+  ngOnInit() {
+    if (this.type == 'edit') {
+      if (this.space.photos) {
+        let photos = this.decodePhotes(this.space.photos);
+        if (photos.length > 0) this.form.patchValue({ photos: this.space.photos });
+      }
+
+      if (this.space.schedules) {
+        let horarios = this.decodeSchedules(this.space.schedules);
+        if (horarios != null && horarios != undefined) {
+          if (horarios.length > 0) horarios.forEach((item: any) => this.schedules.push(this.createSchedule(item)));
+        }
+      }
+      
+    }
   }
 
   get schedules(): FormArray {
     return this.form.get('schedules') as FormArray;
   }
 
-   createSchedule(): FormGroup {
+  createSchedule(data: any = null): FormGroup {
+    console.log("entra");
     return this.fb.group({
-      date: ['', Validators.required],
-      startTime: ['', Validators.required],
-      endTime: ['', Validators.required]
+      date: [data !== null ? data.date : '', Validators.required],
+      startTime: [data !== null ? data.startTime : '', Validators.required],
+      endTime: [data !== null ? data.endTime : '', Validators.required]
     }, { validators: dateRangeValidator() });
   }
 
@@ -91,44 +109,37 @@ export class DialogFormSpacesComponent implements OnInit {
   }
 
   checkForDuplicateSchedules(): boolean {
-  const schedules = this.form.get('schedules') as FormArray;
+    const schedules = this.form.get('schedules') as FormArray;
 
-  for (let i = 0; i < schedules.length; i++) {
-    const currentSchedule = schedules.at(i).value;
+    for (let i = 0; i < schedules.length; i++) {
+      const currentSchedule = schedules.at(i).value;
 
-    // Convertir la fecha y hora a un formato estándar para comparación
-    const currentDate = new Date(currentSchedule.date).toISOString().split('T')[0]; // Fecha como string (YYYY-MM-DD)
-    const currentStartTime = currentSchedule.startTime;
-    const currentEndTime = currentSchedule.endTime;
+      // Convertimos la fecha y hora a un formato estándar para comparación
+      const currentDate = new Date(currentSchedule.date).toISOString().split('T')[0];
+      const currentStartTime = currentSchedule.startTime;
+      const currentEndTime = currentSchedule.endTime;
 
-    console.log("currentSchedule", currentDate, currentStartTime, currentEndTime);
+      console.log("currentSchedule", currentDate, currentStartTime, currentEndTime);
 
-    for (let j = i + 1; j < schedules.length; j++) {
-      const nextSchedule = schedules.at(j).value;
+      for (let j = i + 1; j < schedules.length; j++) {
+        const nextSchedule = schedules.at(j).value;
 
-      const nextDate = new Date(nextSchedule.date).toISOString().split('T')[0];
-      const nextStartTime = nextSchedule.startTime;
-      const nextEndTime = nextSchedule.endTime;
+        const nextDate = new Date(nextSchedule.date).toISOString().split('T')[0];
+        const nextStartTime = nextSchedule.startTime;
+        const nextEndTime = nextSchedule.endTime;
 
-      // Compara si existe un horario con la misma fecha y el mismo rango de hora
-      if (currentDate === nextDate &&
+        // Comparamos si existe un horario con la misma fecha y el mismo rango de hora
+        if (currentDate === nextDate &&
           currentStartTime === nextStartTime &&
           currentEndTime === nextEndTime) {
-        return true; // Hay duplicado
+          return true;
+        }
       }
     }
+
+    return false;
   }
 
-  return false; // No hay duplicados
-}
-
-
-  ngOnInit() {
-    console.log('Data received in dialog:', this.data);
-    console.log('Data received in dialog:', this.typesSpace);
-  }
-
-  // Manejo de cambio de archivo
   onFilesChange(event: any) {
     const input = event.target as HTMLInputElement;
     const files = input.files;
@@ -167,9 +178,9 @@ export class DialogFormSpacesComponent implements OnInit {
   }
 
   onSubmit() {
-
     this.isLoading = true;
     console.log(this.type)
+    let formData = [];
     switch (this.type) {
       case 'create':
         if (this.form.invalid) {
@@ -182,10 +193,20 @@ export class DialogFormSpacesComponent implements OnInit {
           this.isLoading = false;
           return;
         }
+
+        formData = this.form.value;
+        let schedulesControl = this.form.controls['schedules'].value;
+        console.log("schedulesControlEdit", schedulesControl)
+        if (schedulesControl.length === schedulesControl.length) {
+          const fileArrayAsText = JSON.stringify(schedulesControl); // convierto el array a un string json
+          formData.schedules = fileArrayAsText;
+        }
+        console.log("FormData", formData);
+
         this.generalService.createSpace(this.form.value)
           .then(() => {
             this.isLoading = false;
-            // this.form.reset();
+            this.form.reset();
           })
           .catch(() => {
             this.isLoading = false;
@@ -203,10 +224,21 @@ export class DialogFormSpacesComponent implements OnInit {
           this.isLoading = false;
           return;
         }
+
+        formData = this.form.value;
+        let schedulesControlEdit = this.form.controls['schedules'].value;
+        console.log("schedulesControlEdit", schedulesControlEdit)
+
+        if (schedulesControlEdit.length === schedulesControlEdit.length) {
+          const fileArrayAsText = JSON.stringify(schedulesControlEdit);
+          formData.schedules = fileArrayAsText;
+        }
+        console.log("FormData", formData);
+
         this.generalService.editSpace(this.form.value, this.space?.id)
           .then(() => {
             this.isLoading = false;
-            // this.form.reset();
+            this.form.reset();
           })
           .catch(() => {
             this.isLoading = false;
@@ -217,7 +249,7 @@ export class DialogFormSpacesComponent implements OnInit {
         this.generalService.deleteSpace(this.space)
           .then(() => {
             this.isLoading = false;
-            // this.form.reset();
+            this.form.reset();
           })
           .catch(() => {
             this.isLoading = false;
@@ -229,9 +261,26 @@ export class DialogFormSpacesComponent implements OnInit {
     this.isLoading = false;
     console.log("Final ", this.form.value, this.form.controls['name'].value);
     if (this.dialogRef) {
-      // this.dialogRef.close();  // Esto debería funcionar sin problemas
+      this.dialogRef.close();
     }
+  }
 
+  decodePhotes(photos: any) {
+    try {
+      const fileArray = JSON.parse(photos);
+      return fileArray
+    } catch (error) {
+      return [];
+    }
+  }
+
+  decodeSchedules(schedules: any) {
+    try {
+      const dataArray = JSON.parse(schedules);
+      return dataArray;
+    } catch (error) {
+      return [];
+    }
   }
 }
 
@@ -241,7 +290,7 @@ export function dateRangeValidator(): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const startTime = control.get('startTime')?.value;
     const endTime = control.get('endTime')?.value;
-    
+
     if (startTime && endTime && startTime >= endTime) {
       return { 'invalidDateRange': 'La hora de inicio debe ser menor que la hora de fin' };
     }
