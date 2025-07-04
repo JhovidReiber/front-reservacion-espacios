@@ -8,24 +8,17 @@
       </h4>
     </mat-card>
 
-    <!-- <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
-      <p>
-        Esta aplicación te permite gestionar la reservación de espacios de manera eficiente y sencilla.
-        Puedes navegar a través de las diferentes secciones utilizando el menú de navegación.
-      </p>
-    </mat-card> -->
-
     <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
-      <div class="row">
+      <div class="row d-flex justify-content-center align-items-center">
         <div class="col-md-12 mb-2">
           <h4 class="text-center">Filtros de Búsqueda</h4>
         </div>
         <!-- Filtro: Tipos de espacio -->
-        <div class="col-md-4">
+        <div class="col-md-3">
           <mat-form-field appearance="fill" class="w-100">
             <mat-label>Tipos de espacio</mat-label>
             <mat-select [formControl]="typeSpaceControl">
-              <mat-option *ngFor="let option of typesSpace" [value]="option.id">
+              <mat-option *ngFor="let option of typesSpace" [value]="option['@id']">
                 {{ option.name }}
               </mat-option>
             </mat-select>
@@ -33,7 +26,7 @@
         </div>
 
         <!-- Filtro: Cantidad -->
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label class="form-label">Cantidad: <span class="ms-1">{{ capacityControl.value }}</span></label>
           <mat-slider class="w-100" min="0" max="100" showTickMarks discrete [displayWith]="formatLabel">
             <input type="range" [formControl]="capacityControl" matSliderThumb>
@@ -41,7 +34,7 @@
         </div>
 
         <!-- Filtro: Fechas -->
-        <div class="col-md-4">
+        <div class="col-md-3">
           <mat-form-field appearance="fill" class="w-100">
             <mat-label>Fechas</mat-label>
             <mat-date-range-input [formGroup]="dateRange" [rangePicker]="picker">
@@ -53,6 +46,12 @@
             <mat-date-range-picker #picker></mat-date-range-picker>
           </mat-form-field>
         </div>
+        <div class="col-md-3 d-flex justify-content-center align-items-center">
+          <button class="w-100 btn btn-sm btn-outline-primary" (click)="cleanFilter()">
+            <i class="fa-solid fa-filter-circle-xmark"></i>
+            Limpiar Filtros
+          </button>
+        </div>
       </div>
     </mat-card>
 
@@ -62,28 +61,53 @@
           <h4 class="text-center">Espacios Disponibles</h4>
         </div>
 
-         <div *ngFor="let space of spaces; let i = index" class="col-md-4">
+        <div *ngFor="let space of spacesFilter; let i = index" class="col-md-4 p-2">
           <div class="card">
-            <img [src]="'https://material.angular.dev/assets/img/examples/shiba2.jpg'" class="card-img-top img-fluid"
-              alt="...">
+            <!-- Carrusel con un intervalo más corto para cambiar las imágenes más rápido -->
+            <div id="imageCarousel{{i}}" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+              <div class="carousel-inner">
+                <div class="carousel-item text-center" *ngFor="let item of showPhotos(space.photos); let i = index"
+                  [class.active]="i === 0">
+                  <img [src]="item" class="img-fluid rounded" alt="Image"
+                    style="max-width: 400px !important; max-height: 400px !important;">
+                </div>
+              </div>
+
+              <button class="carousel-control-prev" type="button" [attr.data-bs-target]="'#imageCarousel' + i"
+                data-bs-slide="prev" style="color: #003b95;">
+                <span class="fas fa-chevron-left" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" [attr.data-bs-target]="'#imageCarousel' + i"
+                data-bs-slide="next" style="color: #003b95;">
+                <span class="fas fa-chevron-right" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+
             <div class="card-body">
               <h5 class="card-title">{{ space.name }}</h5>
               <p class="card-text">{{ space.description }}</p>
               <p class="card-text"><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
-                <div class="d-grid gap-2">
-                        <button type="submit" extended matButton="outlined" color="primary" class="w-100 btn btn-primary">
-                                Reservar
-                        </button>
-                    </div>
+              <div class="d-grid gap-2">
+                <button type="submit" extended matButton="outlined" color="primary" class="w-100 btn btn-primary">
+                  Reservar
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
-
       </div>
     </mat-card>
-
 
   </div>
 
 </div>
+
+<script>
+  document.querySelectorAll('.carousel').forEach(function (carouselElement) {
+    new bootstrap.Carousel(carouselElement, {
+      ride: 'carousel',
+    });
+  });
+</script>

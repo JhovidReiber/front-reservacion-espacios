@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
@@ -13,8 +13,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
-import {MatGridListModule} from '@angular/material/grid-list';
-import {MatCardModule} from '@angular/material/card';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
 
   // Filtros
   typeSpaceControl = new FormControl('');
-  capacityControl = new FormControl(1);
+  capacityControl = new FormControl();
   dateRange: any = new FormGroup({
     start: new FormControl<Date | null>(null),
     end: new FormControl<Date | null>(null),
@@ -61,14 +61,52 @@ export class HomeComponent implements OnInit {
 
   typesSpace: TypeSpace[] = [];
   spaces: Space[] = [];
-  gridCols = 3; 
+  spacesFilter: any = [];
+  gridCols = 3;
 
 
-  constructor() { }
+  constructor(
+    private cdr: ChangeDetectorRef
+  ) {
+    this.getSpaces();
+    this.getTypesSpace();
+  }
 
   ngOnInit() {
-    this.getTypesSpace();
     this.getSpaces();
+    this.getTypesSpace();
+
+    this.typeSpaceControl.valueChanges.subscribe((value) => {
+      if (value != null || value !== '') {
+        this.spacesFilter = this.spaces.filter((space: any) => value == space.typeSpace);
+      }
+    });
+
+    this.capacityControl.valueChanges.subscribe((value: any) => {
+      console.log(value)
+      if (value != null || value !== '') {
+        this.spacesFilter = this.spaces.filter((space: any) => value > Number(space.capacity));
+      }
+    });
+
+    // Filtro por rango de fechas
+    this.dateRange.valueChanges.subscribe((value:any) => {
+      const { start, end } = value;
+
+      if (start && end) {
+        // Filtrar por fechas
+        this.spacesFilter = this.spaces.filter((space: any) => {
+          const schedules = JSON.parse(space.schedules);
+          console.log("schedules", schedules)
+          return schedules.some((schedule: any) => {
+            const scheduleDate = new Date(schedule.date); 
+            return scheduleDate >= start && scheduleDate <= end;
+          });
+        });
+      } else {
+        this.spacesFilter = [...this.spaces];
+      }
+    });
 
     this.authUser = this.authService.getDataUser();
   }
@@ -84,9 +122,11 @@ export class HomeComponent implements OnInit {
   }
 
   getTypesSpace() {
-    this.generalService.getTypesSpace().subscribe({
+    this.generalService.getTypesSpaceldJson().subscribe({
       next: (response: any) => {
-        this.typesSpace = response;
+        if (response.member) {
+          this.typesSpace = response.member;
+        }
 
         console.log('Tipos de espacio obtenidos:', this.typesSpace);
       },
@@ -101,15 +141,26 @@ export class HomeComponent implements OnInit {
     this.generalService.getSpaces().subscribe({
       next: (response: any) => {
         this.spaces = response;
+        this.spacesFilter = this.spaces;
         console.log('Espacios:', this.spaces);
-        this.setGridCols();
-    window.addEventListener('resize', () => this.setGridCols());
+        this.cdr.detectChanges();
       },
       error: (error: any) => {
         console.error('Error al obtener los espacios:', error);
         this.generalService.showToast('Error al cargar los espacios', 'error');
       }
     });
+  }
+
+  cleanFilter(){
+    this.spacesFilter = this.spaces;
+    this.typeSpaceControl.reset('');
+    this.capacityControl.reset(1);
+    this.dateRange.reset({
+      start: null,
+      end: null
+    });
+    this.cdr.detectChanges();
   }
 
   formatLabel(value: number): string {
@@ -120,20 +171,19 @@ export class HomeComponent implements OnInit {
     return `${value}`;
   }
 
-  setGridCols() {
-    const width = window.innerWidth;
-    if (width < 600) {
-      this.gridCols = 1;  // Una columna para pantallas pequeñas
-    } else if (width < 900) {
-      this.gridCols = 2;  // Dos columnas para pantallas medianas
-    } else {
-      this.gridCols = 3;  // Tres columnas para pantallas grandes
+  reserveSpace(space: any) {
+    console.log('Reserva para:', space.name);
+  }
+
+  showPhotos(photos: any) {
+    try {
+      const fileArray = JSON.parse(photos);
+      return fileArray;
+    } catch (error) {
+      return [];
     }
   }
 
-  reserveSpace(space: any) {
-    console.log('Reserva para:', space.name);
-    // Agregar lógica de reserva
-  }
+
 
 }
