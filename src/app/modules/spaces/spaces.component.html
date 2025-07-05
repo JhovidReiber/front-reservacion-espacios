@@ -75,13 +75,6 @@
               </tr>
             </tbody>
           </table>
-          {{totalItems}}
-          <mat-paginator 
-            [length]="totalItems" 
-            [pageSize]="5" 
-            [pageSizeOptions]="[5]" 
-            (page)="onPageChange($event)">
-          </mat-paginator>
         </div>
       </div>
 
@@ -122,7 +115,6 @@
           </div>
         </div>
 
-        <!-- Mensaje cuando no hay imágenes -->
         <ng-template #noImages>
           <h4 class="text-center">
             Sin Imágenes

@@ -62,11 +62,11 @@
         </div>
 
         <div *ngFor="let space of spacesFilter; let i = index" class="col-md-4 p-2">
-          <div class="card">
+          <div class="card shadow-lg">
             <!-- Carrusel con un intervalo más corto para cambiar las imágenes más rápido -->
             <div id="imageCarousel{{i}}" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
               <div class="carousel-inner">
-                <div class="carousel-item text-center" *ngFor="let item of showPhotos(space.photos); let i = index"
+                <div class="carousel-item text-center p-1" *ngFor="let item of showPhotos(space.photos); let i = index"
                   [class.active]="i === 0">
                   <img [src]="item" class="img-fluid rounded" alt="Image"
                     style="max-width: 400px !important; max-height: 400px !important;">
@@ -90,7 +90,7 @@
               <p class="card-text">{{ space.description }}</p>
               <p class="card-text"><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
               <div class="d-grid gap-2">
-                <button type="submit" extended matButton="outlined" color="primary" class="w-100 btn btn-primary">
+                <button type="submit" extended matButton="outlined" color="primary" class="w-100 btn btn-primary" (click)="reserveSpace(space)">
                   Reservar
                 </button>
               </div>

@@ -11,6 +11,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { filter } from 'rxjs';
 
 @Component({
+  standalone: true,
   selector: 'app-root',
   imports: [RouterOutlet, RouterModule, MatCardModule, CommonModule, MatTabsModule],
   templateUrl: './app.component.html',
@@ -41,14 +42,14 @@ export class AppComponent {
     });
 
     this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd) 
+      filter(event => event instanceof NavigationEnd)
     ).subscribe((event: NavigationEnd) => {
-       if (this.authService.isAuthenticated() && this.authService.isTokenValid()) {
+      if (this.authService.isAuthenticated() && this.authService.isTokenValid()) {
         let token: string = this.authService.getToken() ?? '';
         const decodeJwt = this.authService.decodeJwt(token);
         this.authUser = decodeJwt;
         this.isAuthenticated = true;
-       }
+      }
       console.log('Redirigido a:', event.urlAfterRedirects);
     });
   }

@@ -16,6 +16,9 @@ import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { Dialog } from '@angular/cdk/dialog';
+import { DialogFormReservationComponent } from './dialog-form-reservation/dialog-form-reservation.component';
 
 @Component({
   standalone: true,
@@ -40,6 +43,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatGridListModule,
     MatCardModule,
     MatButtonModule,
+    MatDialogModule,
+
   ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -64,6 +69,7 @@ export class HomeComponent implements OnInit {
   spacesFilter: any = [];
   gridCols = 3;
 
+  readonly dialog = inject(MatDialog);
 
   constructor(
     private cdr: ChangeDetectorRef
@@ -73,6 +79,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.generalService.showToast("Cargando Informacion..", '', 4000);
     this.getSpaces();
     this.getTypesSpace();
 
@@ -90,7 +97,7 @@ export class HomeComponent implements OnInit {
     });
 
     // Filtro por rango de fechas
-    this.dateRange.valueChanges.subscribe((value:any) => {
+    this.dateRange.valueChanges.subscribe((value: any) => {
       const { start, end } = value;
 
       if (start && end) {
@@ -99,7 +106,7 @@ export class HomeComponent implements OnInit {
           const schedules = JSON.parse(space.schedules);
           console.log("schedules", schedules)
           return schedules.some((schedule: any) => {
-            const scheduleDate = new Date(schedule.date); 
+            const scheduleDate = new Date(schedule.date);
             return scheduleDate >= start && scheduleDate <= end;
           });
         });
@@ -109,16 +116,6 @@ export class HomeComponent implements OnInit {
     });
 
     this.authUser = this.authService.getDataUser();
-  }
-
-  options = [
-    { value: 'option1', viewValue: 'Opción 1' },
-    { value: 'option2', viewValue: 'Opción 2' },
-    { value: 'option3', viewValue: 'Opción 3' }
-  ];
-
-  logSelection() {
-    console.log('Valor seleccionado:', this.typeSpaceControl.value);
   }
 
   getTypesSpace() {
@@ -141,6 +138,13 @@ export class HomeComponent implements OnInit {
     this.generalService.getSpaces().subscribe({
       next: (response: any) => {
         this.spaces = response;
+
+      this.spaces = this.spaces.filter(item => {
+        let schedule = this.decodeSchedules(item.schedules);
+        console.log(schedule);
+        
+        return schedule.some((scheduleItem: any) => scheduleItem.available === false);
+      });
         this.spacesFilter = this.spaces;
         console.log('Espacios:', this.spaces);
         this.cdr.detectChanges();
@@ -152,7 +156,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  cleanFilter(){
+  cleanFilter() {
     this.spacesFilter = this.spaces;
     this.typeSpaceControl.reset('');
     this.capacityControl.reset(1);
@@ -171,10 +175,6 @@ export class HomeComponent implements OnInit {
     return `${value}`;
   }
 
-  reserveSpace(space: any) {
-    console.log('Reserva para:', space.name);
-  }
-
   showPhotos(photos: any) {
     try {
       const fileArray = JSON.parse(photos);
@@ -183,7 +183,30 @@ export class HomeComponent implements OnInit {
       return [];
     }
   }
+  
+  decodeSchedules(schedules: any) {
+    try {
+      const dataArray = JSON.parse(schedules);
+      return dataArray;
+    } catch (error) {
+      return [];
+    }
+  }
 
+  reserveSpace(space: any) {
+    console.log('Detalles del espacio:', space);
 
+    const dialogRef = this.dialog.open(DialogFormReservationComponent, {
+      width: '80%',
+      height: '70vh',
+      panelClass: 'custom-dialog',
+      data: { space: space, user: this.authUser },
+    });
 
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+      this.ngOnInit();
+    });
+
+  }
 }

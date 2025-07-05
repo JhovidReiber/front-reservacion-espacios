@@ -1,0 +1,81 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 p-2">
+      <div class="card shadow-lg">
+        <h5 class="text-center fw-bold p-2">
+          {{ space.name }}
+        </h5>
+
+        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+          <div class="carousel-inner">
+            <div class="carousel-item text-center p-1" *ngFor="let item of showPhotos(space.photos); let i = index"
+              [class.active]="i === 0">
+              <img [src]="item" class="img-fluid rounded" alt="Image"
+                style="max-width: 600px !important; max-height: 300px !important;">
+            </div>
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev"
+            style="color: #003b95;">
+            <span class="fas fa-chevron-left" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next"
+            style="color: #003b95;">
+            <span class="fas fa-chevron-right" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <p class="card-text">{{ space.description }}</p>
+          <p class="card-text"><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
+          <p class="card-text"><b>Disponibilidad</b></p>
+
+          <div class="row">
+            <form [formGroup]="scheduleForm">
+              <mat-form-field appearance="fill" class="col-12">
+                <mat-label>Nombre del espacio</mat-label>
+                <input matInput formControlName="eventName" placeholder="Ingrese el nombre del eveneto" class="input-field">
+                <mat-error *ngIf="scheduleForm.controls['eventName'].invalid && scheduleForm.controls['eventName'].touched">
+                  El nombre del evento es requerido
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Selección de fecha -->
+              <mat-form-field appearance="fill" class="col-12">
+                <mat-label>Fecha</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="selectedDate"
+                  placeholder="Selecciona una fecha" [matDatepickerFilter]="filtrarFechasDisponibles"
+                  (dateChange)="onDateChange($event)">
+                <mat-hint>MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error
+                  *ngIf="scheduleForm.controls['selectedDate'].invalid && scheduleForm.controls['selectedDate'].touched">
+                  La fecha de reserva es requerida
+                </mat-error>
+              </mat-form-field>
+
+              <!-- Selección de hora -->
+              <mat-form-field appearance="fill" class="col-12">
+                <mat-label>Hora</mat-label>
+                <mat-select formControlName="selectedTime" placeholder="Selecciona una hora">
+                  <mat-option *ngFor="let time of availableTimes" [value]="time">{{ time }}</mat-option>
+                </mat-select>
+                <mat-error
+                  *ngIf="scheduleForm.controls['selectedTime'].invalid && scheduleForm.controls['selectedTime'].touched">
+                  La hora de reserva es requerida
+                </mat-error>
+              </mat-form-field>
+
+              <div class="col-12 d-flex justify-content-center align-items-center">
+                <button mat-raised-button color="primary" (click)="submitForm()">Reservar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

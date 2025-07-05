@@ -9,6 +9,7 @@ import {
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Space } from '../models/Space';
+import { Reservation } from '../models/Reservation';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +22,9 @@ export class GeneralService {
 
   constructor() { }
 
-  showToast(msg: string, type: string) {
+  showToast(msg: string, type: string = '', duration:any = 5000) {
     this._snackBar.open(msg, 'Cerrar', {
-      duration: 9000,
+      duration: duration,
       panelClass: [`snackbar-${type}`]
     });
   }
@@ -53,14 +54,14 @@ export class GeneralService {
     return this.http.get(`${environment.apiUrl}/type_spaces`);
   }
 
-   getTypesSpaceldJson() {
+  getTypesSpaceldJson() {
     return this.http.get(`${environment.apiUrl}/type_spaces`, {
       headers: {
         Accept: 'application/ld+json'
       }
     });
   }
-  // Modulo de Espacios
+
   getSpaces() {
     return this.http.get(`${environment.apiUrl}/spaces`);
   }
@@ -73,20 +74,19 @@ export class GeneralService {
     });
   }
 
-
   createSpace(space: Space) {
     return this.http.post(`${environment.apiUrl}/spaces`, space).toPromise()
       .then(response => {
-        this.showToast('Espacio actualizado exitosamente', 'success');
+        this.showToast('Espacio creado exitosamente', 'success');
         return response;
       })
       .catch(error => {
-        this.showToast(`Error al actualizar el espacio, ${error.message}`, 'error');
+        this.showToast(`Error al creado el espacio, ${error.message}`, 'error');
         throw error;
       });
   }
 
-  editSpace(space: Space, id:any) {
+  editSpace(space: Space, id: any) {
     return this.http.put(`${environment.apiUrl}/spaces/${id}`, space).toPromise()
       .then(response => {
         this.showToast('Espacio actualizado exitosamente', 'success');
@@ -106,6 +106,46 @@ export class GeneralService {
       })
       .catch(error => {
         this.showToast(`Error al eliminar el espacio, ${error.message}`, 'error');
+        throw error;
+      });
+  }
+
+  createReservation(reservation: any) {
+
+    console.log(reservation, "enviada")
+    return this.http.post(`${environment.apiUrl}/reservations`, reservation).toPromise()
+      .then(response => {
+        console.log('Respuesta del servidor:', response);  // Imprime la respuesta
+        this.showToast('Reserva realizada exitosamente', 'success');
+        return response;
+      })
+      .catch(error => {
+        console.error('Error en la petición:', error);
+        this.showToast(`Error al crear la Reserva, ${error.message}`, 'error');
+        throw error;
+      });
+  }
+
+  editReservation(reservation: any, id: any) {
+    return this.http.put(`${environment.apiUrl}/spaces/${id}`, reservation).toPromise()
+      .then(response => {
+        this.showToast('Reserva actualizada exitosamente', 'success');
+        return response;
+      })
+      .catch(error => {
+        this.showToast(`Error al actualizar la reserva, ${error.message}`, 'error');
+        throw error;
+      });
+  }
+
+  deleteReservation(reservation: any) {
+    return this.http.delete(`${environment.apiUrl}/spaces/${reservation.id}`).toPromise()
+      .then(response => {
+        this.showToast('Reserva eliminada exitosamente', 'success');
+        return response;
+      })
+      .catch(error => {
+        this.showToast(`Error al eliminar la reserva, ${error.message}`, 'error');
         throw error;
       });
   }

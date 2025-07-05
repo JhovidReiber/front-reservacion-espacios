@@ -54,20 +54,25 @@ export class DialogFormSpacesComponent implements OnInit {
   typesSpace: TypeSpace[] = this.data.typesSpace;
   showPhotosEdit: any;
 
+  today:any;
+   
+
   constructor(
     private dialogRef: MatDialogRef<DialogFormSpacesComponent>,
     private fb: FormBuilder
   ) {
     // const fb = inject(FormBuilder);
-
+     this.today = new Date();
     this.form = fb.group({
       name: [this.type == 'edit' && this.space ? this.space.name : '', [Validators.required]],
       description: [this.type == 'edit' && this.space ? this.space.description : '', [Validators.required]],
       capacity: [this.type == 'edit' && this.space ? this.space.capacity : '', [Validators.required, Validators.min(1), Validators.max(100)]],
       typeSpace: [this.type == 'edit' && this.space ? this.space.typeSpace : '', [Validators.required]],
-      photos: [this.type === 'create' ? ['', Validators.required] : ['']],
+       photos: [null, this.type == 'create' ? Validators.required : null],
       schedules: this.fb.array(this.type == 'create' ? [this.createSchedule()] : [])
     });
+
+    console.log(this.form, this.type === 'create' ? 'require' : [''])
   }
 
   ngOnInit() {
@@ -96,7 +101,8 @@ export class DialogFormSpacesComponent implements OnInit {
     return this.fb.group({
       date: [data !== null ? data.date : '', Validators.required],
       startTime: [data !== null ? data.startTime : '', Validators.required],
-      endTime: [data !== null ? data.endTime : '', Validators.required]
+      endTime: [data !== null ? data.endTime : '', Validators.required],
+      available: [false],
     }, { validators: dateRangeValidator() });
   }
 
@@ -114,7 +120,6 @@ export class DialogFormSpacesComponent implements OnInit {
     for (let i = 0; i < schedules.length; i++) {
       const currentSchedule = schedules.at(i).value;
 
-      // Convertimos la fecha y hora a un formato estándar para comparación
       const currentDate = new Date(currentSchedule.date).toISOString().split('T')[0];
       const currentStartTime = currentSchedule.startTime;
       const currentEndTime = currentSchedule.endTime;
@@ -165,9 +170,9 @@ export class DialogFormSpacesComponent implements OnInit {
         reader.onload = (e: any) => {
           fileArray.push(e.target.result);
 
-          // cuando se terminen de leer todos los archivos actualiza el formulario
+
           if (fileArray.length === files.length) {
-            const fileArrayAsText = JSON.stringify(fileArray); // convierto el array a un string json
+            const fileArrayAsText = JSON.stringify(fileArray);
             this.form.patchValue({ photos: fileArrayAsText });
           }
         };
@@ -207,6 +212,7 @@ export class DialogFormSpacesComponent implements OnInit {
           .then(() => {
             this.isLoading = false;
             this.form.reset();
+            this.close();
           })
           .catch(() => {
             this.isLoading = false;
@@ -239,6 +245,7 @@ export class DialogFormSpacesComponent implements OnInit {
           .then(() => {
             this.isLoading = false;
             this.form.reset();
+            this.close();
           })
           .catch(() => {
             this.isLoading = false;
@@ -250,6 +257,7 @@ export class DialogFormSpacesComponent implements OnInit {
           .then(() => {
             this.isLoading = false;
             this.form.reset();
+            this.close();
           })
           .catch(() => {
             this.isLoading = false;
@@ -260,9 +268,6 @@ export class DialogFormSpacesComponent implements OnInit {
     }
     this.isLoading = false;
     console.log("Final ", this.form.value, this.form.controls['name'].value);
-    if (this.dialogRef) {
-      this.dialogRef.close();
-    }
   }
 
   decodePhotes(photos: any) {
@@ -280,6 +285,12 @@ export class DialogFormSpacesComponent implements OnInit {
       return dataArray;
     } catch (error) {
       return [];
+    }
+  }
+
+  close(){
+    if (this.dialogRef) {
+      this.dialogRef.close();
     }
   }
 }

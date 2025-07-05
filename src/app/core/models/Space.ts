@@ -5,5 +5,6 @@ export interface Space {
   name: string;
   description: string;
   capacity: number;
-  photos: string; // En la base de datos es `longtext`, pero asumimos que es una cadena en Angular
+  schedules?: any;
+  photos: string;
 }

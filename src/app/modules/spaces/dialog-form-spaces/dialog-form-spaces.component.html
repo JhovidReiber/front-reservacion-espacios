@@ -35,7 +35,7 @@
 
     <mat-form-field class="w-100 mb-4">
       <mat-label>Capacidad</mat-label>
-      <input matInput type="number" formControlName="capacity" placeholder="Capacidad" class="input-field">
+      <input matInput type="number" formControlName="capacity" placeholder="Capacidad" class="input-field" min="0" max="100">
       <mat-error *ngIf="form.controls['capacity'].invalid && form.controls['capacity'].touched">
         <ng-container *ngIf="form.controls['capacity'].errors?.['required']">
           La capacidad es requerida
@@ -74,7 +74,7 @@
       <div class="col-12 row" *ngFor="let schedule of schedules.controls; let i = index" [formGroupName]="i">
         <mat-form-field class="col-md-12">
           <mat-label>Fecha</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Seleccionar fecha">
+          <input matInput [matDatepicker]="picker" formControlName="date" placeholder="Seleccionar fecha" [min]="today">
           <mat-hint>MM/DD/YYYY</mat-hint>
           <mat-datepicker-toggle matIconSuffix [for]="picker">s</mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>

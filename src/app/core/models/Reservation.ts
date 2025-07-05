@@ -1,8 +1,11 @@
 export interface Reservation {
-  id: number;
-  space_id: number;
-  users_id: number;
+  id: any;
+  user: string;
+  space: string;
   name_event: string;
-  date_start: string;  // Usamos string porque en JavaScript se maneja como cadena
-  date_end: string;    // Usamos string porque en JavaScript se maneja como cadena
+  date_start: string;
+  date_end: string;
+  nameEvent: string;
+  dateStart: string;
+  dateEnd: string;
 }

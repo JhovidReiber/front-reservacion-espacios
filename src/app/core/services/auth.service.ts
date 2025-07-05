@@ -63,7 +63,7 @@ export class AuthService {
     return this.getToken() !== null;
   }
 
-  // Obtener el valor del usuario actual
+  // Obtiene el valor del usuario actual
   /**
    * @author David Reinoso<jhojandavid01@gmail.com>
    */
@@ -71,7 +71,7 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  // Verificar si el token es válido
+  // Verifica si el token es valido
   /**
    * @author David Reinoso<jhojandavid01@gmail.com>
    */
@@ -82,7 +82,7 @@ export class AuthService {
     return payload && payload.exp > Date.now() / 1000;
   }
 
-  // Decodificar el JWT
+  // Decodifica el JWT
   decodeJwt(token: string): any {
     try {
       const base64Url = token.split('.')[1];
@@ -96,7 +96,7 @@ export class AuthService {
     }
   }
 
-  // Proveer un observable para que otros componentes puedan suscribirse al estado de autenticación
+
    get isAuthenticated$(): Observable<boolean> {
     const token = this.getToken() ?? '';
     if (!token) {

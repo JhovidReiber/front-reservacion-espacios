@@ -16,6 +16,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { RegisterComponent } from '../register/register.component';
 
 @Component({
+  standalone: true,
   selector: 'app-login',
   imports: [
     ReactiveFormsModule,
