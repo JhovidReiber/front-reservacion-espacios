@@ -1,59 +1,87 @@
-# FrontReservacionEspacios
+# Frontend Angular – SPA de Reserva de Espacios
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.3.
+Este es el frontend desarrollado en Angular que consume la API RESTful construida con Symfony 7 + API Platform. Permite a los usuarios autenticar, explorar espacios, reservar, editar y cancelar reservas desde una interfaz.
 
-## Development server
+---
 
-To start a local development server, run:
+## Tecnologías utilizadas
 
-```bash
-ng serve
+* Angular 19
+* Angular Material 
+* RxJS
+* JWT (Autenticación)
+* Bootstrap 5
+* FullCalendar
+
+---
+
+## 📦 Instalación
+
+1. Clona el repositorio:
+
+   ```bash
+   git clone https://github.com/JhovidReiber/front-reservacion-espacios.git
+   cd front-reservacion-espacios
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Configura el archivo `src/environments/environment.ts`:
+
+   ```ts
+   export const environment = {
+     production: false,
+     apiUrl: 'http://localhost:8000/api'
+   };
+   ```
+
+4. Inicia la aplicación:
+
+   ```bash
+   ng serve
+   ```
+
+5. Abre el navegador en:
+
+   ```
+   http://localhost:4200
+   ```
+
+---
+
+## 🔐 Autenticación JWT
+
+* El token se obtiene al hacer login (`/api/login`) y se guarda en `localStorage`.
+* Se usa un interceptor HTTP para adjuntar automáticamente el token en cada petición protegida.
+* Se utilizan `AuthGuard` para proteger las rutas privadas.
+
+---
+
+## 🧱 Funcionalidades principales
+
+* Login y registro de usuarios.
+* Listado de espacios disponibles con filtros (tipo, capacidad, fecha).
+* Detalle de espacio con fotos, capacidad y horarios.
+* Reservar un espacio con validación de superposición de horarios.
+* Ver y cancelar reservas propias.
+* Interfaz adaptable con Angular Material y Bootstrap.
+* Calendario visual (FullCalendar).
+
+---
+
+## Estructura del proyecto
+
 ```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+src/
+├── app/
+│   ├── core/             #  guards, interceptor, models, services
+│   ├── shared/           # Componentes compartidos
+│   ├── modules/          # home, login, register, spaces, my-reservations 
+│   ├── app-routes.ts     # Rutas  
+│   └── main.ts
+├── environments/
 ```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
