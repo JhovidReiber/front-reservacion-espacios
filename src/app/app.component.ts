@@ -50,6 +50,11 @@ export class AppComponent {
         this.authUser = decodeJwt;
         this.isAuthenticated = true;
       }
+
+      const currentMenu = this.menus.find(menu => event.urlAfterRedirects.startsWith(menu.route));
+      if (currentMenu) {
+        this.activeLink = currentMenu;
+      }
       console.log('Redirigido a:', event.urlAfterRedirects);
     });
   }

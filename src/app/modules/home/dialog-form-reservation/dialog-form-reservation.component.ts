@@ -15,6 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { GeneralService } from '../../../core/services/general.service';
 import { LoadingComponent } from '../../../shared/components/Loading/Loading.component';
+import moment from 'moment';
 
 @Component({
   standalone: true,
@@ -75,8 +76,7 @@ export class DialogFormReservationComponent implements OnInit {
       const fechasDisponibles = this.scheduleData
         .filter((item: any) => item.available == false)
         .map((item: any) => {
-          const date = new Date(item.date);
-          return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+          return moment(item.date, 'YYYY-MM-DD').toDate();
         })
         .filter((fecha: any) => fecha >= this.today);
 
@@ -93,7 +93,7 @@ export class DialogFormReservationComponent implements OnInit {
     console.log('Fecha seleccionada:', selectedDateString);
 
     return this.scheduleData.some((schedule: any) => {
-      const scheduleDateString = new Date(schedule.date).toISOString().split('T')[0];
+      const scheduleDateString = moment(schedule.date, 'YYYY-MM-DD').format('YYYY-MM-DD');
       console.log('Fecha de schedule:', scheduleDateString);
 
       return selectedDateString == scheduleDateString;
@@ -122,20 +122,22 @@ export class DialogFormReservationComponent implements OnInit {
   getAvailableTimesForDate(date: Date): string[] {
     const availableTimes: string[] = [];
 
-    this.scheduleData.forEach((schedule: any) => {
-      const scheduleDate = new Date(schedule.date);
-      console.log("scheduleDate", scheduleDate)
-      // Crear una nueva fecha con el mismo formato (solo año, mes y día)
-      const scheduleDateOnly = new Date(scheduleDate.getFullYear(), scheduleDate.getMonth(), scheduleDate.getDate());
-      const selectedDateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    // Crear fecha seleccionada solo con año/mes/día (sin hora)
+    const selectedDateOnly = moment(date).startOf('day');
 
-      // Verificar si la fecha seleccionada coincide con la fecha de la programación
-      if (scheduleDateOnly.getTime() === selectedDateOnly.getTime() && schedule.available == false) {
+    this.scheduleData.forEach((schedule: any) => {
+      // Parsear fecha de la programación de forma local
+      const scheduleDate = moment(schedule.date, 'YYYY-MM-DD').startOf('day');
+
+      console.log("scheduleDate", scheduleDate.toDate());
+      console.log("schedule", schedule);
+
+      if (scheduleDate.isSame(selectedDateOnly, 'day') && schedule.available === false) {
         availableTimes.push(schedule.startTime);
       }
     });
 
-    console.log("availableTimes", availableTimes)
+    console.log("availableTimes", availableTimes);
     return availableTimes;
   }
 
@@ -177,7 +179,7 @@ export class DialogFormReservationComponent implements OnInit {
           .then(() => {
             this.loading = false;
             this.scheduleForm.reset();
-              this.generalService.showToast('Reserva realizada exitosamente', 'success');
+            this.generalService.showToast('Reserva realizada exitosamente', 'success');
             this.close();
           })
           .catch(() => {

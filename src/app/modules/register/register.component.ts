@@ -97,7 +97,7 @@ export class RegisterComponent {
             this.generalService.showToast("El nombre de usuario ya existe", 'error');
             this.form.get('username')?.setErrors({ 'exists': true });
           } else {
-            this.generalService.showToast("El nombre de usuario está disponible", 'success');
+            // this.generalService.showToast("El nombre de usuario está disponible", 'success');
             this.form.get('username')?.setErrors(null);
           }
         })
@@ -125,7 +125,7 @@ export class RegisterComponent {
       this.form.get('password')?.setErrors(null);
     } else {
       this.form.get('password')?.setErrors({ 'passwordWeak': true });
-      this.generalService.showToast("La contraseña debe contener al menos una letra, un número y un símbolo especial", 'error');
+      // this.generalService.showToast("La contraseña debe contener al menos una letra, un número y un símbolo especial", 'error');
     }
   }
 

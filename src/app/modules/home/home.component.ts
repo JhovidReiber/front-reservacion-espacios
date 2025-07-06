@@ -20,6 +20,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogFormReservationComponent } from './dialog-form-reservation/dialog-form-reservation.component';
 import { LoadingComponent } from '../../shared/components/Loading/Loading.component';
+import moment from 'moment';
 
 @Component({
   standalone: true,
@@ -109,7 +110,7 @@ export class HomeComponent implements OnInit {
           const schedules = JSON.parse(space.schedules);
           console.log("schedules", schedules)
           return schedules.some((schedule: any) => {
-            const scheduleDate = new Date(schedule.date);
+            const scheduleDate = moment(schedule.date, 'YYYY-MM-DD').toDate();
             return scheduleDate >= start && scheduleDate <= end;
           });
         });
