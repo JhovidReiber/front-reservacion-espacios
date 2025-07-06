@@ -15,7 +15,7 @@ Este es el frontend desarrollado en Angular que consume la API RESTful construid
 
 ---
 
-## 📦 Instalación
+## Instalación
 
 1. Clona el repositorio:
 
@@ -53,7 +53,7 @@ Este es el frontend desarrollado en Angular que consume la API RESTful construid
 
 ---
 
-## 🔐 Autenticación JWT
+## Autenticación JWT
 
 * El token se obtiene al hacer login (`/api/login`) y se guarda en `localStorage`.
 * Se usa un interceptor HTTP para adjuntar automáticamente el token en cada petición protegida.
@@ -61,7 +61,7 @@ Este es el frontend desarrollado en Angular que consume la API RESTful construid
 
 ---
 
-## 🧱 Funcionalidades principales
+## Funcionalidades principales
 
 * Login y registro de usuarios.
 * Listado de espacios disponibles con filtros (tipo, capacidad, fecha).
