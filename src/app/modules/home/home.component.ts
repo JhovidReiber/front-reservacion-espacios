@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { GeneralService } from '../../core/services/general.service';
 import { TypeSpace } from '../../core/models/TypeSpace';
 import { Space } from '../../core/models/Space';
@@ -44,7 +44,7 @@ import { DialogFormReservationComponent } from './dialog-form-reservation/dialog
     MatCardModule,
     MatButtonModule,
     MatDialogModule,
-
+    NgOptimizedImage,
   ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.generalService.showToast("Cargando Informacion..", '', 4000);
+    // this.generalService.showToast("Cargando Informacion..", '', 4000);
     this.getSpaces();
     this.getTypesSpace();
 

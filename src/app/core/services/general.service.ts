@@ -150,6 +150,7 @@ export class GeneralService {
       });
   }
 
-
-
+  getMyReservation(userId:any){
+    return this.http.post(`${environment.apiUrl}/user/reservations`, { userId:userId });
+  }
 }

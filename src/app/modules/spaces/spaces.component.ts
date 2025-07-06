@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit, Type, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCard } from '@angular/material/card';
@@ -39,6 +39,7 @@ import { DialogFormSpacesComponent } from './dialog-form-spaces/dialog-form-spac
     FormsModule,
     MatButtonModule,
     MatDialogModule,
+    NgOptimizedImage,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

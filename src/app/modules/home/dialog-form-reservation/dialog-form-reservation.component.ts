@@ -1,13 +1,9 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { DialogFormSpacesComponent } from '../../spaces/dialog-form-spaces/dialog-form-spaces.component';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import { EventInput } from '@fullcalendar/core/index.js';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import esLocale from '@fullcalendar/core/locales/es';
 
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,8 +14,6 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { GeneralService } from '../../../core/services/general.service';
-
-
 
 @Component({
   standalone: true,
@@ -37,6 +31,7 @@ import { GeneralService } from '../../../core/services/general.service';
     MatSelectModule,
     MatTimepickerModule,
     MatDatepickerModule,
+    NgOptimizedImage,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [provideNativeDateAdapter()],
@@ -166,8 +161,8 @@ export class DialogFormReservationComponent implements OnInit {
       console.log('Hora seleccionada:', this.scheduleForm.value.selectedTime);
 
       let formData: any = {};
-      formData.user = this.generateElementEntityId('users', this.user.id);
-      formData.space = this.generateElementEntityId('spaces', this.space.id);
+      formData.user =  this.user.id;
+      formData.space =  this.space.id;
       formData.name_event = this.scheduleForm.value.eventName;
       formData.date_start = this.scheduleForm.value.selectedDate;
       formData.start_time = this.scheduleForm.value.selectedTime;

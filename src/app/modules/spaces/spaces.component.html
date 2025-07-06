@@ -97,8 +97,10 @@
           <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
               <div class="carousel-item" *ngFor="let item of photosSpace; let i = index" [class.active]="i === 0">
-                <img [src]="item" class="d-block mx-auto rounded" alt="Image"
-                  style="max-width: 550px !important; max-height: 550px !important;">
+                  <div class="d-flex justify-content-center align-items-center" style="position: relative; height: 400px">
+                   <img [ngSrc]="item" class="d-block mx-auto rounded" alt="Image" loading="lazy" [fill]="true"
+                    style="max-width: 400px !important; max-height: 400px !important;">
+                  </div>
               </div>
             </div>
 

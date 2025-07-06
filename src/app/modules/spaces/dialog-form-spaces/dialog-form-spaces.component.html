@@ -59,7 +59,7 @@
         <p class="text-center"><strong>Fotos actuales:</strong></p>
         <div class="row d-flex justify-content-center align-items-center">
           <div class="col d-flex justify-content-center align-items-center" *ngFor="let photo of decodePhotes(space.photos)">
-            <img [src]="photo" alt="Imagen del espacio" class="img-fluid"
+            <img [src]="photo" alt="Imagen del espacio" class="img-fluid" loading="lazy"
               style="max-height: 150px; width: auto; object-fit: cover;">
           </div>
         </div>

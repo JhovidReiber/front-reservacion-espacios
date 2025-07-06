@@ -1,0 +1,47 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 p-2 d-flex justify-content-center align-items-center">
+      <div class="card shadow-lg">
+        <h5 class="text-center fw-bold p-2">
+          {{ dataInfo.title }}
+        </h5>
+
+        <div id="imageCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+          <div class="carousel-inner">
+            <div class="carousel-item text-center p-1" *ngFor="let item of showPhotos(space.photos); let i = index"
+              [class.active]="i === 0">
+             <div class="d-flex justify-content-center align-items-center" style="position: relative; height: 300px">
+                    <img [ngSrc]="item" class="img-fluid rounded" alt="Image" loading="lazy"  [fill]="true"
+                    style="max-width: 400px !important; max-height: 400px !important;">
+                  </div>
+            </div>
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#imageCarousel" data-bs-slide="prev"
+            style="color: #003b95;">
+            <span class="fas fa-chevron-left" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#imageCarousel" data-bs-slide="next"
+            style="color: #003b95;">
+            <span class="fas fa-chevron-right" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <p class="card-text">{{ space.description }}</p>
+          <p class="card-text"><strong>Capacidad:</strong> {{ space.capacity }} personas</p>
+          <p class="card-text"><b>Inicio</b>: {{dataInfo.start}}</p>
+          <p class="card-text"><b>Fin</b>: {{dataInfo.end}}</p>
+
+          <div class="d-flex justify-content-center align-items-center">
+            <button class="btn btn-sm btn-outline-danger">
+              Cancelar Reserva
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -21,7 +21,7 @@ export class AppComponent {
   menus = [
     { label: 'Home', route: '/home', icon: 'fas fa-home', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
     { label: 'Espacios', route: '/spaces', icon: 'fa-solid fa-map-location-dot', role: ['ROL_ADMIN'] },
-    { label: 'Mis Reservas', route: '/mis-reservas', icon: 'fa-solid fa-bookmark', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
+    { label: 'Mis Reservas', route: '/my-reservations', icon: 'fa-solid fa-bookmark', role: ['ROL_USUARIO', 'ROL_ADMIN'] },
   ];
   activeLink = this.menus[0];
 

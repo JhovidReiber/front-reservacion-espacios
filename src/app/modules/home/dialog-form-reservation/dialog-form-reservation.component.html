@@ -10,8 +10,10 @@
           <div class="carousel-inner">
             <div class="carousel-item text-center p-1" *ngFor="let item of showPhotos(space.photos); let i = index"
               [class.active]="i === 0">
-              <img [src]="item" class="img-fluid rounded" alt="Image"
-                style="max-width: 600px !important; max-height: 300px !important;">
+              <div class="d-flex justify-content-center align-items-center" style="position: relative; height: 300px; margin: auto;">
+                    <img [ngSrc]="item" class="img-fluid rounded" alt="Image" loading="lazy"  [fill]="true"
+                    style="max-width: 400px !important; max-height: 400px !important; margin: auto;">
+                  </div>
             </div>
           </div>
 
