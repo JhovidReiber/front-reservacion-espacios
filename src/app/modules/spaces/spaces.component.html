@@ -1,9 +1,10 @@
+<app-Loading *ngIf="loading"></app-Loading>
 <div class="container d-flex justify-content-center align-items-center">
 
   <div class="row">
     <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
       <h4 class="text-center m-0 p-0">
-        Bienvenido <b>{{authUser?.name ?? ''}}, </b>
+        <i class="fa-solid fa-hotel" style="color: #003b95;"></i> Bienvenido <b>{{authUser?.name ?? ''}}, </b>
         a la aplicación de Reservación de Espacios.
       </h4>
     </mat-card>
@@ -11,14 +12,14 @@
     <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
       <div class="row">
         <div class="col-md-12 mb-2">
-          <h4 class="text-center">
+          <h4 class="text-center color-g">
             <i class="fa-solid fa-hotel"></i>
             Espacios Existentes
           </h4>
         </div>
 
         <div class="col-md-12 mb-2 d-flex flex-row-reverse">
-          <button type="submit" class="btn btn-outline-dark btn-sm" (click)="showDetalle(null, 'create')">
+          <button type="submit" class="btn btn-primary" (click)="showDetalle(null, 'create')">
             <i class="fa-solid fa-circle-plus"></i> Nuevo Espacio 
           </button>
         </div>
@@ -27,12 +28,12 @@
           <table class="table table-sm table-bordered table-striped table-hover align-middle shadow text-center table-hover">
             <thead>
               <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Capacidad</th>
-                <th>Horarios</th>
-                <th>Fotos</th>
-                <th>Acciones</th>
+                <th class="color-g">Nombre</th>
+                <th class="color-g">Descripción</th>
+                <th class="color-g">Capacidad</th>
+                <th class="color-g">Horarios</th>
+                <th class="color-g">Fotos</th>
+                <th class="color-g">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -45,21 +46,21 @@
                   <p>{{ element.description }}</p>
                 </td>
                 <td>{{ element.capacity }}</td>
-                <td>
+                <td style="width: 250px;">
                   <ul class="list-group list-group-flush">
                     <li class="list-group-item p-2" *ngFor="let schedule of decodeSchedules(element.schedules)">
                       <div class="d-flex flex-column">
-                        <span><strong><i class="fa-regular fa-calendar-days"></i> Fecha:</strong> {{ schedule.date | date: 'yyyy-MM-dd' }}</span>
+                        <span><strong class="color-g"><i class="fa-regular fa-calendar-days"></i> Fecha:</strong> {{ schedule.date | date: 'yyyy-MM-dd' }}</span>
                         <span class="">
-                          <strong><i class="fa-solid fa-clock"></i> Inicio:</strong> {{ schedule.startTime }} |
-                          <strong><i class="fa-solid fa-clock"></i> Fin:</strong> {{ schedule.endTime }}
+                          <strong class="color-g"><i class="fa-solid fa-clock color-g"></i> Inicio:</strong> {{ schedule.startTime }} |
+                          <strong class="color-g"><i class="fa-solid fa-clock color-g"></i> Fin:</strong> {{ schedule.endTime }}
                         </span>
                       </div>
                     </li>
                   </ul>
                 </td>
                 <td>
-                  <button type="button" class="btn btn-outline-dark btn-sm" data-bs-toggle="modal"
+                  <button type="button" class="btn btn-outline-primary btn-sm" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" (click)="showPhotos(element.photos)">
                     Ver
                   </button>

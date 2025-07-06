@@ -40,6 +40,52 @@ table {
   overflow: hidden;
 }
 
-.mat-mdc-card{
+.mat-mdc-card {
   background: #fff !important;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 1%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+}
+
+.btn-outline-primary {
+  border-color: rgba(9, 9, 121, 1);
+  color: #fff;
+  color: #003b95;
+}
+
+.btn-outline-primary:hover {
+  background: linear-gradient(90deg, rgba(2, 0, 36, 1) 1%, rgba(9, 9, 121, 1) 35%, rgba(0, 212, 255, 1) 100%);
+  color: #fff;
+}
+
+.color-g {
+  color: rgba(9, 9, 121, 1) !important;
+}
+
+.fc-col-header-cell-cushion {
+  color: rgba(9, 9, 121, 1) !important;
+}
+
+.fc-daygrid-day-number {
+  color: rgba(9, 9, 121, 1) !important;
+}
+
+.fc-event-title {
+  color: rgba(9, 9, 121, 1) !important;
+}
+
+.fc-event-time {
+  color: rgb(0, 6, 15) !important;
+}
+
+.fc-toolbar-title {
+  /* color: rgba(9, 9, 121, 1) !important; */
+  color: #020024;
+  text-transform: capitalize !important;
+}
+
+.fc-button {
+  background: rgba(9, 9, 121, 0.01);
+  background: radial-gradient(circle, rgba(9, 9, 121, 1) 0%, rgba(0, 0, 0, 1) 100%);
 }

@@ -14,6 +14,7 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { GeneralService } from '../../../core/services/general.service';
+import { LoadingComponent } from '../../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
@@ -32,6 +33,7 @@ import { GeneralService } from '../../../core/services/general.service';
     MatTimepickerModule,
     MatDatepickerModule,
     NgOptimizedImage,
+    LoadingComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [provideNativeDateAdapter()],
@@ -50,6 +52,7 @@ export class DialogFormReservationComponent implements OnInit {
   fechasDisponibles: Date[] = [];
   today = new Date();
 
+  loading = false;
 
   constructor(
     private dialogRef: MatDialogRef<DialogFormSpacesComponent>,
@@ -156,28 +159,34 @@ export class DialogFormReservationComponent implements OnInit {
 
   submitForm(): void {
     console.log(this.scheduleForm.value)
-    if (this.scheduleForm.valid) {
-      console.log('Fecha seleccionada:', this.scheduleForm.value.selectedDate);
-      console.log('Hora seleccionada:', this.scheduleForm.value.selectedTime);
+    try {
+      if (this.scheduleForm.valid) {
+        this.loading = true;
+        console.log('Fecha seleccionada:', this.scheduleForm.value.selectedDate);
+        console.log('Hora seleccionada:', this.scheduleForm.value.selectedTime);
 
-      let formData: any = {};
-      formData.user =  this.user.id;
-      formData.space =  this.space.id;
-      formData.name_event = this.scheduleForm.value.eventName;
-      formData.date_start = this.scheduleForm.value.selectedDate;
-      formData.start_time = this.scheduleForm.value.selectedTime;
-      formData.date_end = this.scheduleForm.value.selectedDate;
+        let formData: any = {};
+        formData.user = this.user.id;
+        formData.space = this.space.id;
+        formData.name_event = this.scheduleForm.value.eventName;
+        formData.date_start = this.scheduleForm.value.selectedDate;
+        formData.start_time = this.scheduleForm.value.selectedTime;
+        formData.date_end = this.scheduleForm.value.selectedDate;
 
-      this.generalService.createReservation(formData)
-        .then(() => {
-          this.scheduleForm.reset();
-          this.close();
-        })
-        .catch(() => {
-        });
+        this.generalService.createReservation(formData)
+          .then(() => {
+            this.loading = false;
+            this.scheduleForm.reset();
+              this.generalService.showToast('Reserva realizada exitosamente', 'success');
+            this.close();
+          })
+          .catch(() => {
+            this.loading = false;
+          });
 
-    } else {
-      console.log('Por favor, selecciona una fecha y hora válidas.');
+      }
+    } catch (error) {
+      this.loading = false;
     }
   }
 

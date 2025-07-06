@@ -19,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogFormReservationComponent } from './dialog-form-reservation/dialog-form-reservation.component';
+import { LoadingComponent } from '../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
@@ -45,6 +46,7 @@ import { DialogFormReservationComponent } from './dialog-form-reservation/dialog
     MatButtonModule,
     MatDialogModule,
     NgOptimizedImage,
+    LoadingComponent,
   ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,6 +73,8 @@ export class HomeComponent implements OnInit {
 
   readonly dialog = inject(MatDialog);
 
+  loading = false;
+
   constructor(
     private cdr: ChangeDetectorRef
   ) {
@@ -79,7 +83,6 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.generalService.showToast("Cargando Informacion..", '', 4000);
     this.getSpaces();
     this.getTypesSpace();
 
@@ -119,41 +122,53 @@ export class HomeComponent implements OnInit {
   }
 
   getTypesSpace() {
-    this.generalService.getTypesSpaceldJson().subscribe({
+    this.loading = true;
+    try {
+      this.generalService.getTypesSpaceldJson().subscribe({
       next: (response: any) => {
+        this.loading = false;
         if (response.member) {
           this.typesSpace = response.member;
         }
-
         console.log('Tipos de espacio obtenidos:', this.typesSpace);
       },
       error: (error: any) => {
+         this.loading = false;
         console.error('Error al obtener los tipos de espacio:', error);
         this.generalService.showToast('Error al cargar los tipos de espacio', 'error');
       }
     });
+    } catch (error) {
+       this.loading = false;
+    }
   }
 
   getSpaces() {
-    this.generalService.getSpaces().subscribe({
-      next: (response: any) => {
-        this.spaces = response;
+    this.loading = true;
+    try {
+      this.generalService.getSpaces().subscribe({
+        next: (response: any) => {
+          this.loading = false;
+          this.spaces = response;
+          this.spaces = this.spaces.filter(item => {
+            let schedule = this.decodeSchedules(item.schedules);
+            console.log(schedule);
 
-      this.spaces = this.spaces.filter(item => {
-        let schedule = this.decodeSchedules(item.schedules);
-        console.log(schedule);
-        
-        return schedule.some((scheduleItem: any) => scheduleItem.available === false);
+            return schedule.some((scheduleItem: any) => scheduleItem.available === false);
+          });
+          this.spacesFilter = this.spaces;
+          console.log('Espacios:', this.spaces);
+          this.cdr.detectChanges();
+        },
+        error: (error: any) => {
+          this.loading = false;
+          console.error('Error al obtener los espacios:', error);
+          this.generalService.showToast('Error al cargar los espacios', 'error');
+        }
       });
-        this.spacesFilter = this.spaces;
-        console.log('Espacios:', this.spaces);
-        this.cdr.detectChanges();
-      },
-      error: (error: any) => {
-        console.error('Error al obtener los espacios:', error);
-        this.generalService.showToast('Error al cargar los espacios', 'error');
-      }
-    });
+    } catch (error) {
+      this.loading = false;
+    }
   }
 
   cleanFilter() {
@@ -183,7 +198,7 @@ export class HomeComponent implements OnInit {
       return [];
     }
   }
-  
+
   decodeSchedules(schedules: any) {
     try {
       const dataArray = JSON.parse(schedules);

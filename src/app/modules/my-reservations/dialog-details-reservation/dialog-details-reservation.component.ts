@@ -14,13 +14,14 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { GeneralService } from '../../../core/services/general.service';
+import { LoadingComponent } from '../../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
   selector: 'app-dialog-details-reservation',
   templateUrl: './dialog-details-reservation.component.html',
   styleUrls: ['./dialog-details-reservation.component.css'],
-    imports: [
+  imports: [
     CommonModule,
     ReactiveFormsModule,
     FullCalendarModule,
@@ -32,24 +33,32 @@ import { GeneralService } from '../../../core/services/general.service';
     MatTimepickerModule,
     MatDatepickerModule,
     NgOptimizedImage,
+    LoadingComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [provideNativeDateAdapter()],
 })
 export class DialogDetailsReservationComponent implements OnInit {
 
-   dataDialog = inject(MAT_DIALOG_DATA);
-    generalService = inject(GeneralService);
-    space = this.dataDialog.space;
-    user = this.dataDialog.user;
-    dataInfo = this.dataDialog.dataInfo;
+  dataDialog = inject(MAT_DIALOG_DATA);
+  generalService = inject(GeneralService);
+  space = this.dataDialog.space;
+  user = this.dataDialog.user;
+  dataInfo = this.dataDialog.dataInfo;
+  id = this.dataDialog.id;
+  showDelete = false;
 
-  constructor() { }
+  loading = false;
+
+  constructor(
+    private dialogRef: MatDialogRef<DialogFormSpacesComponent>,
+  ) { }
 
   ngOnInit() {
-    console.log(this.space)
-    console.log(this.user)
-    console.log(this.dataInfo)
+    console.log(this.space);
+    console.log(this.user);
+    console.log(this.dataInfo);
+    console.log(this.id);
   }
 
   showPhotos(photos: any) {
@@ -67,6 +76,31 @@ export class DialogDetailsReservationComponent implements OnInit {
       return dataArray;
     } catch (error) {
       return [];
+    }
+  }
+
+  deleteReservation() {
+    this.loading = true;
+
+    try {
+      this.generalService.deleteReservation(this.id)
+        .then(() => {
+          this.loading = false;
+           this.generalService.showToast('Reserva eliminada exitosamente', 'success');
+          this.close();
+        })
+        .catch(() => {
+          this.loading = false;
+        });
+
+    } catch (error) {
+      this.loading = true;
+    }
+  }
+
+  close() {
+    if (this.dialogRef) {
+      this.dialogRef.close();
     }
   }
 

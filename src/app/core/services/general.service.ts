@@ -7,7 +7,7 @@ import {
   MatSnackBarRef,
 } from '@angular/material/snack-bar';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Space } from '../models/Space';
 import { Reservation } from '../models/Reservation';
 
@@ -41,14 +41,17 @@ export class GeneralService {
       });
   }
 
-  checkUserNameExists(username: string) {
-    return this.http.post(`${environment.apiUrl}/check-username`, { username }).toPromise()
-      .then((response: any) => response.exists)
-      .catch(error => {
-        this.showToast(`Error al verificar el nombre de usuario, ${error.message}`, 'error');
-        throw error;
-      });
-  }
+ checkUserNameExists(username: string) {
+  const headers = new HttpHeaders();  // Crea un encabezado vacío, sin incluir el JWT
+
+  return this.http.post(`${environment.apiUrl}/check-username`, { username }, { headers })
+    .toPromise()
+    .then((response: any) => response.exists)
+    .catch(error => {
+      this.showToast(`Error al verificar el nombre de usuario, ${error.message}`, 'error');
+      throw error;
+    });
+}
 
   getTypesSpace() {
     return this.http.get(`${environment.apiUrl}/type_spaces`);
@@ -115,7 +118,7 @@ export class GeneralService {
     console.log(reservation, "enviada")
     return this.http.post(`${environment.apiUrl}/reservations`, reservation).toPromise()
       .then(response => {
-        console.log('Respuesta del servidor:', response);  // Imprime la respuesta
+        console.log('Respuesta del servidor:', response);
         this.showToast('Reserva realizada exitosamente', 'success');
         return response;
       })
@@ -126,20 +129,8 @@ export class GeneralService {
       });
   }
 
-  editReservation(reservation: any, id: any) {
-    return this.http.put(`${environment.apiUrl}/spaces/${id}`, reservation).toPromise()
-      .then(response => {
-        this.showToast('Reserva actualizada exitosamente', 'success');
-        return response;
-      })
-      .catch(error => {
-        this.showToast(`Error al actualizar la reserva, ${error.message}`, 'error');
-        throw error;
-      });
-  }
-
-  deleteReservation(reservation: any) {
-    return this.http.delete(`${environment.apiUrl}/spaces/${reservation.id}`).toPromise()
+  deleteReservation(id: any) {
+    return this.http.delete(`${environment.apiUrl}/reservations/${id}`).toPromise()
       .then(response => {
         this.showToast('Reserva eliminada exitosamente', 'success');
         return response;

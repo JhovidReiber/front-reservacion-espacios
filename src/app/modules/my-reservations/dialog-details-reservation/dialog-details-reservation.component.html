@@ -1,5 +1,23 @@
+<app-Loading *ngIf="loading"></app-Loading>
 <div class="container">
   <div class="row">
+
+    <div class="col-md-12 p-3 d-flex justify-content-center align-items-center" *ngIf="showDelete">
+      <div class="card shadow-lg col-md-12 p-2 border border-danger">
+        <div class="row">
+          <div class="col-md-12">
+            <h4 class="text-center p-3">¿Desea eliminar la reserva del espacio <b>{{space?.name}}</b>?</h4>
+          </div>
+          <div class="col-md-12 d-flex justify-content-center align-items-center">
+            <button mat-raised-button (click)="showDelete = false" class="m-1">Cancel</button>
+            <button mat-raised-button (click)="deleteReservation()" class="m-1"
+              style="background: red;color: white;">{{loading ? 'Cargado...' : 'Eliminar'}}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
     <div class="col-md-12 p-2 d-flex justify-content-center align-items-center">
       <div class="card shadow-lg">
         <h5 class="text-center fw-bold p-2">
@@ -10,10 +28,11 @@
           <div class="carousel-inner">
             <div class="carousel-item text-center p-1" *ngFor="let item of showPhotos(space.photos); let i = index"
               [class.active]="i === 0">
-             <div class="d-flex justify-content-center align-items-center" style="position: relative; height: 300px">
-                    <img [ngSrc]="item" class="img-fluid rounded" alt="Image" loading="lazy"  [fill]="true"
-                    style="max-width: 400px !important; max-height: 400px !important;">
-                  </div>
+              <div class="d-flex justify-content-center align-items-center"
+                style="position: relative; height: 300px; margin: auto;">
+                <img [ngSrc]="item" class="img-fluid rounded" alt="Image" loading="lazy" [fill]="true"
+                  style="max-width: 400px !important; max-height: 400px !important; margin: auto;">
+              </div>
             </div>
           </div>
 
@@ -35,8 +54,8 @@
           <p class="card-text"><b>Inicio</b>: {{dataInfo.start}}</p>
           <p class="card-text"><b>Fin</b>: {{dataInfo.end}}</p>
 
-          <div class="d-flex justify-content-center align-items-center">
-            <button class="btn btn-sm btn-outline-danger">
+          <div class="d-flex justify-content-center align-items-center" *ngIf="!showDelete">
+            <button class="btn btn-sm btn-outline-danger" (click)="showDelete = true">
               Cancelar Reserva
             </button>
           </div>

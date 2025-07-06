@@ -19,6 +19,7 @@ import { Dialog } from '@angular/cdk/dialog';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { DialogDetailsReservationComponent } from './dialog-details-reservation/dialog-details-reservation.component';
 import { EventClickArg } from '@fullcalendar/core/index.js';
+import { LoadingComponent } from '../../shared/components/Loading/Loading.component';
 
 
 @Component({
@@ -35,8 +36,9 @@ import { EventClickArg } from '@fullcalendar/core/index.js';
     MatToolbarModule,
     MatIconModule,
     MatDialogModule,
+    LoadingComponent,
   ],
- providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MyReservationsComponent implements OnInit {
@@ -49,8 +51,9 @@ export class MyReservationsComponent implements OnInit {
   reservations: any;
   eventsFullCalendar: any;
 
-   readonly dialog = inject(MatDialog);
+  readonly dialog = inject(MatDialog);
 
+  loading = false;
   constructor(
     private cdr: ChangeDetectorRef
   ) {
@@ -65,19 +68,18 @@ export class MyReservationsComponent implements OnInit {
       plugins: [dayGridPlugin],
       initialView: 'dayGridMonth',
       selectable: true,
-      selectHeper: true,
       events: [],
       eventClick: this.showReservation.bind(this),
       eventTextColor: 'black',
-      eventColor: 'red',
-      eventHeight: 'auto',
-      eventWith: 'auto',
     };
   }
 
   getMyReservations() {
-    this.generalService.getMyReservation(this.authUser.id).subscribe({
+    this.loading = true;
+    try {
+      this.generalService.getMyReservation(this.authUser.id).subscribe({
       next: (response: any) => {
+        this.loading = false;
         if (response && response.length > 0) {
           this.reservations = response;
           console.log("this.reservations", this.reservations);
@@ -93,6 +95,7 @@ export class MyReservationsComponent implements OnInit {
                 end: moment(`${schedule.date} ${schedule.endTime}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
                 extendedProps: {
                   space: item.space,
+                  id: item.id,
                   dataInfo: {
                     start: moment(`${schedule.date} ${schedule.startTime}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
                     end: moment(`${schedule.date} ${schedule.endTime}`, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'),
@@ -111,33 +114,40 @@ export class MyReservationsComponent implements OnInit {
         this.cdr.detectChanges();
       },
       error: (error: any) => {
+        this.loading = false;
         console.error('Error al obtener los espacios:', error);
         this.generalService.showToast('Error al cargar los espacios', 'error');
       }
     });
+    } catch (error) {
+      this.loading = false;
+    }
   }
 
-   showReservation(sclickInfo: EventClickArg) {
+  showReservation(sclickInfo: EventClickArg) {
 
     let space = sclickInfo.event.extendedProps['space'];
-    let dataInfo = sclickInfo.event.extendedProps['dataInfo']
+    let dataInfo = sclickInfo.event.extendedProps['dataInfo'];
+    let id = sclickInfo.event.extendedProps['id'];
     console.log('Detalles del espacio:', space);
-    
-        const dialogRef = this.dialog.open(DialogDetailsReservationComponent, {
-          width: '80%',
-          height: '70vh',
-          panelClass: 'custom-dialog',
-          data: { 
-            space: space,
-            user: this.authUser,
-            dataInfo: dataInfo,
-          },
-        });
-    
-        dialogRef.afterClosed().subscribe(result => {
-          console.log(`Dialog result: ${result}`);
-          this.ngOnInit();
-        });
+
+    const dialogRef = this.dialog.open(DialogDetailsReservationComponent, {
+      width: '80%',
+      height: '70vh',
+      panelClass: 'custom-dialog',
+      data: {
+        space: space,
+        user: this.authUser,
+        dataInfo: dataInfo,
+        id: id,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(`Dialog result: ${result}`);
+      this.ngOnInit();
+      this.getMyReservations();
+    });
   }
 
 

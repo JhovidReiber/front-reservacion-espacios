@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCardModule } from '@angular/material/card';
+import { LoadingComponent } from '../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
@@ -31,6 +32,7 @@ import { MatCardModule } from '@angular/material/card';
     MatProgressSpinnerModule,
     MatCardModule,
     NgOptimizedImage,
+    LoadingComponent,
   ],
 })
 export class RegisterComponent {
@@ -64,15 +66,21 @@ export class RegisterComponent {
     }
 
     this.isLoading = true;
-    this.generalService.registerUser(this.form.value)
-      .then(() => {
-        this.isLoading = false;
-        this.form.reset();
-        this.form.get('username')?.setErrors(null);
-      })
-      .catch(() => {
-        this.isLoading = false;
-      });
+    try {
+      this.generalService.registerUser(this.form.value)
+        .then(() => {
+          this.isLoading = false;
+          this.form.reset();
+          this.form.get('username')?.setErrors(null);
+          this.form.get('role')?.setValue('ROL_USUARIO');
+          this.generalService.showToast('Usuario registrado exitosamente', 'success');
+        })
+        .catch(() => {
+          this.isLoading = false;
+        });
+    } catch (error) {
+      this.isLoading = false;
+    }
   }
 
   checkUserNameExists() {
@@ -82,19 +90,23 @@ export class RegisterComponent {
       return;
     }
 
-    this.generalService.checkUserNameExists(username)
-      .then(exists => {
-        if (exists) {
-          this.generalService.showToast("El nombre de usuario ya existe", 'error');
-          this.form.get('username')?.setErrors({ 'exists': true });
-        } else {
-          this.generalService.showToast("El nombre de usuario está disponible", 'success');
-          this.form.get('username')?.setErrors(null);
-        }
-      })
-      .catch(() => {
-        this.generalService.showToast("Error al verificar el nombre de usuario", 'error');
-      });
+    try {
+      this.generalService.checkUserNameExists(username)
+        .then(exists => {
+          if (exists) {
+            this.generalService.showToast("El nombre de usuario ya existe", 'error');
+            this.form.get('username')?.setErrors({ 'exists': true });
+          } else {
+            this.generalService.showToast("El nombre de usuario está disponible", 'success');
+            this.form.get('username')?.setErrors(null);
+          }
+        })
+        .catch(() => {
+          this.generalService.showToast("Error al verificar el nombre de usuario", 'error');
+        });
+    } catch (error) {
+
+    }
   }
 
   checkPasswordStrength() {

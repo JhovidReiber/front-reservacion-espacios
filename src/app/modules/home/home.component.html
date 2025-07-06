@@ -1,9 +1,10 @@
+<app-Loading *ngIf="loading"></app-Loading>
 <div class="container d-flex justify-content-center align-items-center">
 
   <div class="row">
     <mat-card class="col-md-12 p-4 my-2" fxLayout="column" fxLayoutAlign="center center">
       <h4 class="text-center m-0 p-0">
-        Bienvenido <b>{{authUser?.name ?? ''}}, </b>
+        <<i class="fa-solid fa-hotel" style="color: #003b95;"></i> Bienvenido <b>{{authUser?.name ?? ''}}, </b>
         a la aplicación de Reservación de Espacios.
       </h4>
     </mat-card>

@@ -15,6 +15,7 @@ import { Space } from '../../core/models/Space';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Dialog } from '@angular/cdk/dialog';
 import { DialogFormSpacesComponent } from './dialog-form-spaces/dialog-form-spaces.component';
+import { LoadingComponent } from '../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
@@ -40,6 +41,7 @@ import { DialogFormSpacesComponent } from './dialog-form-spaces/dialog-form-spac
     MatButtonModule,
     MatDialogModule,
     NgOptimizedImage,
+    LoadingComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -65,6 +67,8 @@ export class SpacesComponent implements OnInit {
 
   photosSpace!: any;
 
+  loading = false;
+
   constructor(
     private changeDetectorRef: ChangeDetectorRef
   ) { }
@@ -77,47 +81,58 @@ export class SpacesComponent implements OnInit {
 
 
   getSpaces() {
-     this.generalService.showToast("Cargando Informacion..", '', 4000);
     const page = this.pageIndex + 1;
     const pageSize = this.pageSize;
 
     console.log('pageIndex:', page);
     console.log('pageSize:', pageSize);
 
+    this.loading = true;
+    try {
+      this.generalService.getSpacesldJson(page, pageSize).subscribe({
+        next: (response: any) => {
+          this.loading = false;
+          this.spaces = response['member'];
+          this.totalItems = response['totalItems'];
 
-    this.generalService.getSpacesldJson(page, pageSize).subscribe({
-      next: (response: any) => {
-        this.spaces = response['member'];
-        this.totalItems = response['totalItems'];
+          this.dataSource = new MatTableDataSource(this.spaces);
+          this.dataSource.paginator = this.paginator;
 
+          this.changeDetectorRef.detectChanges();
 
-        this.dataSource = new MatTableDataSource(this.spaces);
-        this.dataSource.paginator = this.paginator;
-
-        this.changeDetectorRef.detectChanges();
-
-      },
-      error: (error: any) => {
-        console.error('Error al obtener los espacios:', error);
-        this.generalService.showToast('Error al cargar los espacios', 'error');
-      }
-    });
+        },
+        error: (error: any) => {
+          this.loading = false;
+          console.error('Error al obtener los espacios:', error);
+          this.generalService.showToast('Error al cargar los espacios', 'error');
+        }
+      });
+    } catch (error) {
+      this.loading = false;
+    }
   }
 
   getTypesSpace() {
-    this.generalService.getTypesSpaceldJson().subscribe({
-      next: (response: any) => {
-        if (response.member) {
-          this.typesSpace = response.member;
-        }
+    this.loading = true;
+    try {
+      this.generalService.getTypesSpaceldJson().subscribe({
+        next: (response: any) => {
+          this.loading = false;
+          if (response.member) {
+            this.typesSpace = response.member;
+          }
 
-        console.log('Tipos de espacio obtenidos:', this.typesSpace);
-      },
-      error: (error: any) => {
-        console.error('Error al obtener los tipos de espacio:', error);
-        this.generalService.showToast('Error al cargar los tipos de espacio', 'error');
-      }
-    });
+          console.log('Tipos de espacio obtenidos:', this.typesSpace);
+        },
+        error: (error: any) => {
+          this.loading = false;
+          console.error('Error al obtener los tipos de espacio:', error);
+          this.generalService.showToast('Error al cargar los tipos de espacio', 'error');
+        }
+      });
+    } catch (error) {
+      this.loading = false;
+    }
   }
 
 

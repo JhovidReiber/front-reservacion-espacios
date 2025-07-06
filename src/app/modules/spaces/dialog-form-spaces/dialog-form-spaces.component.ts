@@ -14,6 +14,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatTimepickerModule } from '@angular/material/timepicker';
+import { LoadingComponent } from '../../../shared/components/Loading/Loading.component';
 
 @Component({
   standalone: true,
@@ -32,6 +33,7 @@ import { MatTimepickerModule } from '@angular/material/timepicker';
     MatNativeDateModule,
     MatDatepickerModule,
     MatTimepickerModule,
+    LoadingComponent,
   ],
   providers: [provideNativeDateAdapter()],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -54,21 +56,21 @@ export class DialogFormSpacesComponent implements OnInit {
   typesSpace: TypeSpace[] = this.data.typesSpace;
   showPhotosEdit: any;
 
-  today:any;
-   
+  today: any;
+
 
   constructor(
     private dialogRef: MatDialogRef<DialogFormSpacesComponent>,
     private fb: FormBuilder
   ) {
     // const fb = inject(FormBuilder);
-     this.today = new Date();
+    this.today = new Date();
     this.form = fb.group({
       name: [this.type == 'edit' && this.space ? this.space.name : '', [Validators.required]],
       description: [this.type == 'edit' && this.space ? this.space.description : '', [Validators.required]],
       capacity: [this.type == 'edit' && this.space ? this.space.capacity : '', [Validators.required, Validators.min(1), Validators.max(100)]],
       typeSpace: [this.type == 'edit' && this.space ? this.space.typeSpace : '', [Validators.required]],
-       photos: [null, this.type == 'create' ? Validators.required : null],
+      photos: [null, this.type == 'create' ? Validators.required : null],
       schedules: this.fb.array(this.type == 'create' ? [this.createSchedule()] : [])
     });
 
@@ -88,7 +90,7 @@ export class DialogFormSpacesComponent implements OnInit {
           if (horarios.length > 0) horarios.forEach((item: any) => this.schedules.push(this.createSchedule(item)));
         }
       }
-      
+
     }
   }
 
@@ -186,85 +188,92 @@ export class DialogFormSpacesComponent implements OnInit {
     this.isLoading = true;
     console.log(this.type)
     let formData = [];
-    switch (this.type) {
-      case 'create':
-        if (this.form.invalid) {
-          this.generalService.showToast("Debe completar todos los campos", 'error');
-          this.isLoading = false;
-          return;
-        }
-        if (this.checkForDuplicateSchedules()) {
-          this.generalService.showToast("No se pueden agregar horarios duplicados", 'error');
-          this.isLoading = false;
-          return;
-        }
-
-        formData = this.form.value;
-        let schedulesControl = this.form.controls['schedules'].value;
-        console.log("schedulesControlEdit", schedulesControl)
-        if (schedulesControl.length === schedulesControl.length) {
-          const fileArrayAsText = JSON.stringify(schedulesControl); // convierto el array a un string json
-          formData.schedules = fileArrayAsText;
-        }
-        console.log("FormData", formData);
-
-        this.generalService.createSpace(this.form.value)
-          .then(() => {
+    try {
+      switch (this.type) {
+        case 'create':
+          if (this.form.invalid) {
+            this.generalService.showToast("Debe completar todos los campos", 'error');
             this.isLoading = false;
-            this.form.reset();
-            this.close();
-          })
-          .catch(() => {
+            return;
+          }
+          if (this.checkForDuplicateSchedules()) {
+            this.generalService.showToast("No se pueden agregar horarios duplicados", 'error');
             this.isLoading = false;
-          });
+            return;
+          }
 
-        break;
-      case 'edit':
-        if (this.form.invalid) {
-          this.generalService.showToast("Debe completar todos los campos", 'error');
-          this.isLoading = false;
-          return;
-        }
-        if (this.checkForDuplicateSchedules()) {
-          this.generalService.showToast("No se pueden agregar horarios duplicados", 'error');
-          this.isLoading = false;
-          return;
-        }
+          formData = this.form.value;
+          let schedulesControl = this.form.controls['schedules'].value;
+          console.log("schedulesControlEdit", schedulesControl)
+          if (schedulesControl.length === schedulesControl.length) {
+            const fileArrayAsText = JSON.stringify(schedulesControl); // convierto el array a un string json
+            formData.schedules = fileArrayAsText;
+          }
+          console.log("FormData", formData);
 
-        formData = this.form.value;
-        let schedulesControlEdit = this.form.controls['schedules'].value;
-        console.log("schedulesControlEdit", schedulesControlEdit)
+          this.generalService.createSpace(this.form.value)
+            .then(() => {
+              this.isLoading = false;
+              this.generalService.showToast('Espacio creado exitosamente', 'success');
+              this.form.reset();
+              this.close();
+            })
+            .catch(() => {
+              this.isLoading = false;
+            });
 
-        if (schedulesControlEdit.length === schedulesControlEdit.length) {
-          const fileArrayAsText = JSON.stringify(schedulesControlEdit);
-          formData.schedules = fileArrayAsText;
-        }
-        console.log("FormData", formData);
-
-        this.generalService.editSpace(this.form.value, this.space?.id)
-          .then(() => {
+          break;
+        case 'edit':
+          if (this.form.invalid) {
+            this.generalService.showToast("Debe completar todos los campos", 'error');
             this.isLoading = false;
-            this.form.reset();
-            this.close();
-          })
-          .catch(() => {
+            return;
+          }
+          if (this.checkForDuplicateSchedules()) {
+            this.generalService.showToast("No se pueden agregar horarios duplicados", 'error');
             this.isLoading = false;
-          });
+            return;
+          }
 
-        break;
-      case 'delete':
-        this.generalService.deleteSpace(this.space)
-          .then(() => {
-            this.isLoading = false;
-            this.form.reset();
-            this.close();
-          })
-          .catch(() => {
-            this.isLoading = false;
-          });
-        break;
-      default:
-        break;
+          formData = this.form.value;
+          let schedulesControlEdit = this.form.controls['schedules'].value;
+          console.log("schedulesControlEdit", schedulesControlEdit)
+
+          if (schedulesControlEdit.length === schedulesControlEdit.length) {
+            const fileArrayAsText = JSON.stringify(schedulesControlEdit);
+            formData.schedules = fileArrayAsText;
+          }
+          console.log("FormData", formData);
+
+          this.generalService.editSpace(this.form.value, this.space?.id)
+            .then(() => {
+              this.generalService.showToast('Espacio actualizado exitosamente', 'success');
+              this.isLoading = false;
+              this.form.reset();
+              this.close();
+            })
+            .catch(() => {
+              this.isLoading = false;
+            });
+
+          break;
+        case 'delete':
+          this.generalService.deleteSpace(this.space)
+            .then(() => {
+              this.generalService.showToast('Espacio eliminado exitosamente', 'success');
+              this.isLoading = false;
+              this.form.reset();
+              this.close();
+            })
+            .catch(() => {
+              this.isLoading = false;
+            });
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      this.isLoading = false;
     }
     this.isLoading = false;
     console.log("Final ", this.form.value, this.form.controls['name'].value);
@@ -288,7 +297,7 @@ export class DialogFormSpacesComponent implements OnInit {
     }
   }
 
-  close(){
+  close() {
     if (this.dialogRef) {
       this.dialogRef.close();
     }
